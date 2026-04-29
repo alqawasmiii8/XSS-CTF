@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-12 mb-12">
+    <div class="bg-cyber-card border border-cyber-primary rounded-lg p-8 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-mono font-bold text-white mb-2">New <span class="text-cyber-primary neon-text">Agent</span></h1>
+            <p class="text-gray-400 font-mono text-sm">Register to join the competition.</p>
+        </div>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="space-y-6">
+                <!-- Username -->
+                <div>
+                    {{ form.username.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2") }}
+                    {{ form.username(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="CyberNinja") }}
+                    {% for error in form.username.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Email -->
+                <div>
+                    {{ form.email.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2") }}
+                    {{ form.email(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="agent@domain.com") }}
+                    {% for error in form.email.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Password -->
+                <div>
+                    {{ form.password.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2") }}
+                    {{ form.password(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="••••••••") }}
+                    {% for error in form.password.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                
+                <!-- Confirm Password -->
+                <div>
+                    {{ form.confirm_password.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2") }}
+                    {{ form.confirm_password(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="••••••••") }}
+                    {% for error in form.confirm_password.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Submit -->
+                <div>
+                    {{ form.submit(class="w-full flex justify-center py-3 px-4 border border-transparent rounded shadow-sm text-sm font-mono font-bold text-cyber-darker bg-cyber-primary hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyber-primary focus:ring-offset-cyber-card transition-all cursor-pointer") }}
+                </div>
+            </div>
+        </form>
+        
+        <div class="mt-6 text-center text-sm text-gray-400 font-mono border-t border-cyber-border pt-6">
+            Already have an account? 
+            <a href="/auth/login" class="text-cyber-primary hover:text-white transition-colors">Log in here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

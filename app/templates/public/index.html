@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}XSSPloit CTF — Enter the Grid{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-12">
+
+    <!-- Hero Section -->
+    <div>
+        <p class="text-xs font-mono text-cyber-primary tracking-[0.4em] uppercase mb-4 opacity-80">// Competition Online</p>
+        <h1 class="text-5xl md:text-7xl font-mono font-bold text-white mb-6 tracking-tight leading-tight">
+            Enter the <span class="text-cyber-primary neon-text">Grid</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-400 font-mono mb-10 max-w-2xl mx-auto">
+            Test your skills against cutting-edge cybersec challenges. Compete, learn, and conquer the leaderboard.
+        </p>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            {% if not current_user.is_authenticated %}
+            <a href="/auth/register" class="px-8 py-4 bg-cyber-primary text-cyber-darker font-bold font-mono rounded hover:bg-white transition-all shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]">
+                Register Now
+            </a>
+            {% endif %}
+            <a href="/challenges" class="px-8 py-4 border-2 border-cyber-border text-white font-bold font-mono rounded hover:border-cyber-primary hover:text-cyber-primary transition-all">
+                View Challenges →
+            </a>
+        </div>
+    </div>
+
+    <!-- Countdown Timer Section -->
+    {% if settings %}
+    <div class="w-full max-w-3xl">
+        {% set now_ts = none %}
+        
+        {% if settings.is_live and settings.end_time %}
+        <!-- Competition is running: countdown to end -->
+        <div class="bg-cyber-card border border-cyber-primary/40 rounded-xl p-6 shadow-[0_0_30px_rgba(0,240,255,0.06)]">
+            <p class="text-xs font-mono text-cyber-primary tracking-widest uppercase mb-5">⏳ Time Remaining</p>
+            <div id="countdown" class="grid grid-cols-4 gap-4 text-center" data-target="{{ settings.end_time.isoformat() }}">
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-days" class="text-4xl md:text-5xl font-mono font-bold text-cyber-primary neon-text">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Days</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-hours" class="text-4xl md:text-5xl font-mono font-bold text-cyber-primary neon-text">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Hours</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-minutes" class="text-4xl md:text-5xl font-mono font-bold text-cyber-primary neon-text">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Minutes</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-seconds" class="text-4xl md:text-5xl font-mono font-bold text-cyber-secondary">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Seconds</div>
+                </div>
+            </div>
+        </div>
+
+        {% elif not settings.is_live and settings.start_time %}
+        <!-- Competition hasn't started: countdown to start -->
+        <div class="bg-cyber-card border border-yellow-500/30 rounded-xl p-6 shadow-[0_0_30px_rgba(255,200,0,0.05)]">
+            <p class="text-xs font-mono text-yellow-400 tracking-widest uppercase mb-5">🔒 Competition Starts In</p>
+            <div id="countdown" class="grid grid-cols-4 gap-4 text-center" data-target="{{ settings.start_time.isoformat() }}">
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-days" class="text-4xl md:text-5xl font-mono font-bold text-yellow-400">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Days</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-hours" class="text-4xl md:text-5xl font-mono font-bold text-yellow-400">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Hours</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-minutes" class="text-4xl md:text-5xl font-mono font-bold text-yellow-400">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Minutes</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4">
+                    <div id="cd-seconds" class="text-4xl md:text-5xl font-mono font-bold text-yellow-300">--</div>
+                    <div class="text-xs text-gray-500 font-mono uppercase tracking-widest mt-1">Seconds</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Dynamic Stats Section -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-3xl">
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 text-center hover:border-cyber-primary/50 transition-colors">
+            <div class="text-4xl font-bold font-mono text-cyber-primary mb-2 neon-text">8+</div>
+            <div class="text-xs text-gray-500 uppercase tracking-widest font-mono">Categories</div>
+        </div>
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 text-center hover:border-cyber-primary/50 transition-colors">
+            <div class="text-4xl font-bold font-mono text-cyber-primary mb-2 neon-text">42</div>
+            <div class="text-xs text-gray-500 uppercase tracking-widest font-mono">Challenges</div>
+        </div>
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 text-center hover:border-cyber-primary/50 transition-colors">
+            <div class="text-4xl font-bold font-mono text-cyber-primary mb-2 neon-text">10k+</div>
+            <div class="text-xs text-gray-500 uppercase tracking-widest font-mono">Prize Pool</div>
+        </div>
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 text-center hover:border-cyber-secondary/50 transition-colors">
+            <div class="text-4xl font-bold font-mono text-cyber-secondary mb-2">24h</div>
+            <div class="text-xs text-gray-500 uppercase tracking-widest font-mono">Duration</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const el = document.getElementById('countdown');
+    if (!el) return;
+    
+    const target = new Date(el.dataset.target + 'Z').getTime(); // assume UTC
+    
+    function pad(n) { return String(n).padStart(2, '0'); }
+    
+    function tick() {
+        const now = Date.now();
+        let diff = Math.floor((target - now) / 1000);
+        
+        if (diff <= 0) {
+            document.getElementById('cd-days').textContent    = '00';
+            document.getElementById('cd-hours').textContent   = '00';
+            document.getElementById('cd-minutes').textContent = '00';
+            document.getElementById('cd-seconds').textContent = '00';
+            clearInterval(timer);
+            return;
+        }
+        
+        const days    = Math.floor(diff / 86400); diff -= days * 86400;
+        const hours   = Math.floor(diff / 3600);  diff -= hours * 3600;
+        const minutes = Math.floor(diff / 60);    diff -= minutes * 60;
+        const seconds = diff;
+        
+        document.getElementById('cd-days').textContent    = pad(days);
+        document.getElementById('cd-hours').textContent   = pad(hours);
+        document.getElementById('cd-minutes').textContent = pad(minutes);
+        document.getElementById('cd-seconds').textContent = pad(seconds);
+    }
+    
+    tick();
+    const timer = setInterval(tick, 1000);
+})();
+</script>
+{% endblock %}

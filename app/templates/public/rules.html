@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-mono font-bold text-white mb-4">Competition <span class="text-cyber-primary neon-text">Rules</span></h1>
+        <p class="text-gray-400 font-mono">Ignorance of the rules is no excuse.</p>
+    </div>
+
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-8 font-mono prose prose-invert prose-p:text-gray-400 prose-headings:text-cyber-primary max-w-none">
+        
+        <h2 class="text-2xl mt-0">General Conduct</h2>
+        <ul>
+            <li>Do not attack the CTF infrastructure (this website, database, scoring system).</li>
+            <li>Do not generate excessive load (no brute-forcing flags or endpoints unless explicitly instructed).</li>
+            <li>Do not try to DoS/DDoS the platform or challenges.</li>
+            <li>Do not share flags or solutions with other teams before the event concludes.</li>
+            <li>Respect other participants and the organizers.</li>
+        </ul>
+
+        <h2 class="text-2xl mt-8">Eligibility</h2>
+        <p>Anyone is free to play, but prize eligibility may be restricted to specific groups (e.g., students, residents of specific regions). Check the official announcements for details.</p>
+
+        <h2 class="text-2xl mt-8">Flag Format</h2>
+        <p>Unless stated otherwise in the challenge description, all flags will follow the format:</p>
+        <div class="bg-cyber-dark p-4 rounded text-cyber-secondary font-bold text-center border border-cyber-border shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+            XSS{some_random_string_here_1234}
+        </div>
+
+        <h2 class="text-2xl mt-8">Disqualification</h2>
+        <p>Violation of these rules will result in immediate disqualification and a ban from future events hosted on this platform. Organizers' decisions are final.</p>
+
+    </div>
+</div>
+{% endblock %}

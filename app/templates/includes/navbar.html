@@ -1,0 +1,64 @@
+<nav class="bg-cyber-dark/80 backdrop-blur-md border-b border-cyber-border sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <!-- Brand -->
+            <a href="/" class="flex items-center space-x-2">
+                <span class="text-2xl font-mono font-bold text-cyber-primary neon-text">XSSPloit</span>
+                <span class="text-2xl font-mono font-bold text-white">CTF</span>
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 items-center font-mono text-sm">
+                <a href="/challenges" class="hover:text-cyber-primary transition-colors">Challenges</a>
+                <a href="/scoreboard" class="hover:text-cyber-primary transition-colors">Scoreboard</a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.team %}
+                        <a href="/team/{{ current_user.team.id }}" class="hover:text-cyber-primary transition-colors flex items-center gap-1">
+                            <span class="text-cyber-primary">⬡</span> {{ current_user.team.name }}
+                        </a>
+                    {% else %}
+                        <a href="/team/" class="hover:text-cyber-primary transition-colors">Team</a>
+                    {% endif %}
+                {% endif %}
+                <a href="/faq" class="hover:text-cyber-primary transition-colors">FAQ</a>
+                <a href="/rules" class="hover:text-cyber-primary transition-colors">Rules</a>
+                
+                <div class="h-6 w-px bg-cyber-border"></div>
+                
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin() %}
+                        <a href="/admin/" class="text-cyber-secondary font-bold hover:text-cyber-primary transition-colors pr-2">Admin</a>
+                    {% endif %}
+                    <a href="/dashboard" class="flex items-center space-x-2 hover:text-cyber-primary transition-colors">
+                        <span>{{ current_user.username }}</span>
+                    </a>
+                    
+                    <a href="/notifications" class="relative group flex items-center justify-center w-8 h-8 rounded-full hover:bg-cyber-darker transition-colors text-gray-300 hover:text-cyber-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        {% set unread_count = current_user.notifications.filter_by(is_read=False).count() %}
+                        {% if unread_count > 0 %}
+                            <span class="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 flex h-4 w-4">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-secondary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-cyber-secondary text-[9px] font-bold text-white items-center justify-center">{{ unread_count }}</span>
+                            </span>
+                        {% endif %}
+                    </a>
+                    
+                    <a href="/auth/logout" class="px-4 py-2 text-cyber-secondary border border-cyber-border hover:border-cyber-secondary hover:bg-cyber-secondary/10 rounded transition-all">Logout</a>
+                {% else %}
+                    <a href="/auth/login" class="hover:text-cyber-primary transition-colors">Login</a>
+                    <a href="/auth/register" class="px-4 py-2 bg-cyber-primary/10 text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]">Register</a>
+                {% endif %}
+            </div>
+            
+            <!-- Mobile Menu Button (placeholder logic) -->
+            <div class="md:hidden">
+                <button class="text-gray-300 hover:text-white">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>

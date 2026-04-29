@@ -1,0 +1,108 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+        <div class="p-4 bg-cyber-darker border-b border-cyber-border flex justify-between items-center">
+            <h2 class="font-mono font-bold text-white">All Teams</h2>
+            <span class="text-xs text-gray-500 font-mono">{{ teams_data|length }} team(s) registered</span>
+        </div>
+
+        {% if teams_data %}
+        <div class="divide-y divide-cyber-border/50">
+            {% for entry in teams_data %}
+            {% set t = entry.team %}
+            <div class="p-4 hover:bg-cyber-darker/40 transition-colors">
+                <!-- Team header row -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-3">
+                        <div>
+                            <div class="font-mono font-bold text-white text-base">{{ t.name }}</div>
+                            <div class="text-xs text-gray-500 font-mono">
+                                Captain: <span class="text-cyber-primary">{{ t.captain.username }}</span>
+                                &nbsp;·&nbsp; Invite: <span class="text-gray-400 tracking-widest">{{ t.invite_code }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <div class="text-cyber-primary font-mono font-bold text-lg">{{ entry.score }}</div>
+                            <div class="text-xs text-gray-500 font-mono">pts</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-white font-mono font-bold text-lg">{{ entry.solves }}</div>
+                            <div class="text-xs text-gray-500 font-mono">solves</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-white font-mono font-bold text-lg">{{ entry.members|length }}</div>
+                            <div class="text-xs text-gray-500 font-mono">members</div>
+                        </div>
+                        <form action="/admin/teams/delete/{{ t.id }}" method="POST"
+                              onsubmit="return confirm('Delete team {{ t.name }}? This cannot be undone.');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit"
+                                    class="px-3 py-1 text-xs font-mono border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white rounded transition-all">
+                                Delete Team
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Members list -->
+                <div class="flex flex-wrap gap-2">
+                    {% for m in entry.members %}
+                    <div class="flex items-center gap-2 px-2 py-1 bg-cyber-darker rounded border border-cyber-border text-xs font-mono">
+                        <span class="text-gray-300">{{ m.user.username }}</span>
+                        {% if m.user_id == t.captain_id %}
+                        <span class="text-cyber-primary text-[10px]">★ captain</span>
+                        {% else %}
+                        <form action="/admin/teams/kick/{{ m.id }}" method="POST" class="inline"
+                              onsubmit="return confirm('Kick {{ m.user.username }} from the team?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="text-red-500 hover:text-red-300 text-[10px] ml-1">✕</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="px-4 py-10 text-center text-gray-500 font-mono text-sm">
+            No teams have been created yet.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Create Team Form -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 max-w-lg">
+        <h2 class="font-mono font-bold text-white mb-4">Create a New Team</h2>
+        <form method="POST" action="/admin/teams">
+            {{ form.hidden_tag() }}
+            <div class="space-y-4">
+                <div>
+                    {{ form.name.label(class="block text-xs font-mono text-cyber-primary mb-1") }}
+                    {{ form.name(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="e.g. HackerSquad") }}
+                    {% for error in form.name.errors %}
+                        <p class="text-red-400 text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.captain_username.label(class="block text-xs font-mono text-cyber-primary mb-1") }}
+                    {{ form.captain_username(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="Exact username of the captain") }}
+                    <p class="text-xs text-gray-500 mt-1 font-mono">The user must already be registered and not in any team.</p>
+                    {% for error in form.captain_username.errors %}
+                        <p class="text-red-400 text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.submit(class="px-6 py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded font-mono font-bold transition-all cursor-pointer") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

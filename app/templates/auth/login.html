@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-16">
+    <div class="bg-cyber-card border border-cyber-primary rounded-lg p-8 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-mono font-bold text-white mb-2">System <span class="text-cyber-primary neon-text">Login</span></h1>
+            <p class="text-gray-400 font-mono text-sm">Authenticate to access the grid.</p>
+        </div>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="space-y-6">
+                <!-- Username or Email -->
+                <div>
+                    {{ form.login.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2") }}
+                    {{ form.login(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="user@domain.com or username") }}
+                    {% for error in form.login.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        {{ form.password.label(class="block text-sm font-mono font-bold text-cyber-primary") }}
+                        <a href="#" class="text-xs text-gray-500 hover:text-cyber-primary font-mono">Forgot password?</a>
+                    </div>
+                    {{ form.password(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="••••••••") }}
+                    {% for error in form.password.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center">
+                    {{ form.remember_me(class="h-4 w-4 text-cyber-primary focus:ring-cyber-primary border-gray-300 rounded bg-cyber-darker") }}
+                    {{ form.remember_me.label(class="ml-2 block text-sm text-gray-400 font-mono") }}
+                </div>
+
+                <!-- Submit -->
+                <div>
+                    {{ form.submit(class="w-full flex justify-center py-3 px-4 border border-transparent rounded shadow-sm text-sm font-mono font-bold text-cyber-darker bg-cyber-primary hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyber-primary focus:ring-offset-cyber-card transition-all cursor-pointer") }}
+                </div>
+            </div>
+        </form>
+        
+        <div class="mt-6 text-center text-sm text-gray-400 font-mono border-t border-cyber-border pt-6">
+            Don't have an account? 
+            <a href="/auth/register" class="text-cyber-primary hover:text-white transition-colors">Register here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

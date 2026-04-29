@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: xss-ctf
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:application
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Set this securely in the Render dashboard!
+      - key: SECRET_KEY
+        generateValue: true # Render will automatically generate a strong secret key

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Teams{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-mono font-bold text-white mb-4">Your <span class="text-cyber-primary neon-text">Team</span></h1>
+        <p class="text-gray-400 font-mono">Create a new team or join an existing one.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Create Team -->
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-8">
+            <h2 class="text-2xl font-mono font-bold text-white mb-6">Create Team</h2>
+            <form method="POST" action="/team/create">
+                {{ create_form.hidden_tag() }}
+                <div class="space-y-4">
+                    <div>
+                        {{ create_form.name.label(class="block text-sm font-mono text-gray-400 mb-1") }}
+                        {{ create_form.name(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-2 text-white focus:border-cyber-primary font-mono", placeholder="Team Name") }}
+                    </div>
+                    {{ create_form.submit(class="w-full py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary rounded hover:bg-cyber-primary hover:text-cyber-dark font-mono font-bold transition-all cursor-pointer") }}
+                </div>
+            </form>
+        </div>
+
+        <!-- Join Team -->
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-8">
+            <h2 class="text-2xl font-mono font-bold text-white mb-6">Join Team</h2>
+            <form method="POST" action="/team/join">
+                {{ join_form.hidden_tag() }}
+                <div class="space-y-4">
+                    <div>
+                        {{ join_form.invite_code.label(class="block text-sm font-mono text-gray-400 mb-1") }}
+                        {{ join_form.invite_code(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-2 text-white focus:border-cyber-primary font-mono", placeholder="e.g. 123e4567-e89b-12d3... ") }}
+                    </div>
+                    {{ join_form.submit(class="w-full py-2 bg-cyber-darker text-cyber-secondary border border-cyber-secondary rounded hover:bg-cyber-secondary hover:text-white font-mono font-bold transition-all cursor-pointer") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

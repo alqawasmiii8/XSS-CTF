@@ -1,0 +1,74 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+    <!-- Category List -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+        <div class="p-4 bg-cyber-darker border-b border-cyber-border">
+            <h2 class="font-mono font-bold text-white">Category Roster</h2>
+        </div>
+        <table class="w-full text-left font-mono text-sm">
+            <thead class="bg-cyber-dark text-gray-400 border-b border-cyber-border">
+                <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Description</th>
+                    <th class="px-4 py-3 text-center">Challenges</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/50 text-gray-300">
+                    <td class="px-4 py-3">{{ cat.id }}</td>
+                    <td class="px-4 py-3 font-bold text-cyber-primary">{{ cat.name }}</td>
+                    <td class="px-4 py-3 text-gray-400 text-xs">{{ cat.description or '—' }}</td>
+                    <td class="px-4 py-3 text-center">{{ cat.challenges.count() }}</td>
+                    <td class="px-4 py-3 text-right">
+                        {% if cat.challenges.count() == 0 %}
+                        <form action="/admin/categories/delete/{{ cat.id }}" method="POST" class="inline"
+                              onsubmit="return confirm('Delete category {{ cat.name }}?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="text-xs text-red-500 hover:text-red-400">Delete</button>
+                        </form>
+                        {% else %}
+                        <span class="text-xs text-gray-600">Has challenges</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">No categories yet. Create one below.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Category Form -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 max-w-lg">
+        <h2 class="font-mono font-bold text-white mb-4">Add New Category</h2>
+        <form method="POST" action="/admin/categories">
+            {{ form.hidden_tag() }}
+            <div class="space-y-4">
+                <div>
+                    {{ form.name.label(class="block text-xs font-mono text-cyber-primary mb-1") }}
+                    {{ form.name(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="e.g. Web, Forensics, Crypto…") }}
+                    {% for error in form.name.errors %}
+                        <p class="text-red-400 text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.description.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                    {{ form.description(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", rows="2", placeholder="Short description…") }}
+                </div>
+                <div>
+                    {{ form.submit(class="px-6 py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded font-mono font-bold transition-all cursor-pointer") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

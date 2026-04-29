@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Scoreboard - XSSPloit CTF{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="text-center">
+        <h1 class="text-4xl font-mono font-bold text-white mb-2">Live <span class="text-cyber-primary neon-text">Scoreboard</span></h1>
+        <p class="text-gray-500 font-mono text-sm">Real-time team rankings &amp; progression</p>
+    </div>
+
+    <!-- Animated Timeline Chart -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-mono font-bold text-white text-sm uppercase tracking-widest">
+                <span class="text-cyber-primary">&#9650;</span> Score Progression (Top 10 Teams)
+            </h2>
+            <span id="chart-status" class="text-xs font-mono text-gray-500">Loading chart...</span>
+        </div>
+        <div class="relative" style="height: 350px;">
+            <canvas id="scoreboardChart"></canvas>
+            <div id="chart-no-data" class="hidden absolute inset-0 flex items-center justify-center text-gray-600 font-mono text-sm">
+                No solve data yet. Chart will populate as teams solve challenges.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scoreboard Table -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden shadow-xl">
+        <div class="p-4 bg-cyber-darker border-b border-cyber-border">
+            <h2 class="font-mono font-bold text-white">Rankings</h2>
+        </div>
+        <table class="w-full text-left font-mono">
+            <thead>
+                <tr class="bg-cyber-dark text-gray-400 text-xs uppercase tracking-wider border-b border-cyber-border">
+                    <th class="px-6 py-4 w-16">Rank</th>
+                    <th class="px-6 py-4">Team</th>
+                    <th class="px-6 py-4 text-right">Score</th>
+                    <th class="px-6 py-4 text-right hidden md:table-cell">Last Solve</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in scoreboard %}
+                <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/60 transition-colors group">
+                    <td class="px-6 py-4">
+                        {% if row.rank == 1 %}
+                            <span class="text-yellow-400 text-lg">🥇</span>
+                        {% elif row.rank == 2 %}
+                            <span class="text-gray-300 text-lg">🥈</span>
+                        {% elif row.rank == 3 %}
+                            <span class="text-amber-600 text-lg">🥉</span>
+                        {% else %}
+                            <span class="text-gray-500 text-sm">#{{ row.rank }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="/team/{{ row.team.id }}" class="{% if row.rank <= 3 %}text-cyber-primary font-bold{% else %}text-gray-300{% endif %} hover:text-white transition-colors group-hover:underline">
+                            {{ row.team.name }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4 text-right font-bold {% if row.rank <= 3 %}text-cyber-primary{% else %}text-white{% endif %}">
+                        {{ row.score }} <span class="text-xs font-normal text-gray-500">pts</span>
+                    </td>
+                    <td class="px-6 py-4 text-right text-gray-500 text-xs hidden md:table-cell">
+                        {{ row.last_solve.strftime('%b %d %H:%M') if row.last_solve else '—' }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not scoreboard %}
+                <tr>
+                    <td colspan="4" class="px-6 py-12 text-center text-gray-500 font-mono">
+                        No teams have scored yet. The race begins soon!
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const statusEl = document.getElementById('chart-status');
+    const noDataEl = document.getElementById('chart-no-data');
+
+    try {
+        const res = await fetch('/scoreboard/api/timeline');
+        const data = await res.json();
+
+        if (!data.datasets || data.datasets.length === 0 || data.datasets.every(d => d.data.length === 0)) {
+            statusEl.textContent = 'No data yet';
+            noDataEl.classList.remove('hidden');
+            return;
+        }
+
+        statusEl.textContent = `${data.datasets.length} team(s)`;
+
+        const ctx = document.getElementById('scoreboardChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: { datasets: data.datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1200,
+                    easing: 'easeInOutQuart'
+                },
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#9ca3af',
+                            font: { family: 'monospace', size: 11 },
+                            boxWidth: 12,
+                            padding: 15,
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0d1117',
+                        borderColor: '#00f0ff',
+                        borderWidth: 1,
+                        titleColor: '#00f0ff',
+                        bodyColor: '#d1d5db',
+                        titleFont: { family: 'monospace' },
+                        bodyFont: { family: 'monospace' },
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { tooltipFormat: 'MMM d, HH:mm' },
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: '#6b7280', font: { family: 'monospace', size: 10 } },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: '#6b7280', font: { family: 'monospace', size: 10 } },
+                    }
+                }
+            }
+        });
+    } catch (err) {
+        statusEl.textContent = 'Error loading chart';
+        console.error(err);
+    }
+});
+</script>
+{% endblock %}

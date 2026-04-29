@@ -1,0 +1,50 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="max-w-4xl space-y-6">
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6">
+        <h2 class="font-mono font-bold text-white mb-1">Edit Page: <span class="text-cyber-primary">{{ page.title }}</span></h2>
+        <p class="text-xs text-gray-500 font-mono mb-6">Slug: /{{ page.slug }} &nbsp;·&nbsp; HTML is supported in the content field.</p>
+
+        <form method="POST" action="/admin/pages/edit/{{ page.slug }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-4">
+                {{ form.title.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                {{ form.title(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm") }}
+            </div>
+
+            <div class="mb-6">
+                {{ form.content.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                <p class="text-xs text-gray-600 mb-2 font-mono">Supports full HTML. Use &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt; etc. for formatting.</p>
+                {{ form.content(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", rows="20", id="page-content-editor") }}
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <a href="/admin/pages" class="px-6 py-2 bg-cyber-darker text-gray-500 border border-gray-600 hover:text-white hover:border-gray-400 rounded font-mono transition-all">Cancel</a>
+                {{ form.submit(class="px-6 py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded font-mono font-bold transition-all cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6">
+        <h3 class="font-mono font-bold text-white mb-4 text-sm border-b border-cyber-border pb-2">Live Preview</h3>
+        <div id="page-preview" class="prose prose-invert prose-headings:font-mono prose-headings:text-cyber-primary prose-a:text-cyber-primary prose-strong:text-white prose-p:text-gray-300 prose-li:text-gray-300 max-w-none text-sm">
+        </div>
+    </div>
+</div>
+
+<script>
+    const editor = document.getElementById('page-content-editor');
+    const preview = document.getElementById('page-preview');
+    
+    function updatePreview() {
+        preview.innerHTML = editor.value;
+    }
+    
+    // Initial render
+    updatePreview();
+    editor.addEventListener('input', updatePreview);
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="bg-cyber-card border border-cyber-border rounded-lg p-6 max-w-2xl">
+    <h2 class="font-mono font-bold text-white mb-6 text-xl">Global Simulation Settings</h2>
+    
+    <form method="POST" action="/admin/settings">
+        {{ form.hidden_tag() }}
+        
+        <div class="space-y-6">
+            <div>
+                {{ form.event_name.label(class="block text-sm font-mono text-gray-400 mb-2") }}
+                {{ form.event_name(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white outline-none focus:border-cyber-primary font-mono") }}
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-mono text-gray-400 mb-2">Start Time (UTC)</label>
+                    <input type="datetime-local" name="start_time" 
+                           value="{{ settings.start_time.strftime('%Y-%m-%dT%H:%M') if settings and settings.start_time else '' }}"
+                           class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white outline-none focus:border-cyber-primary font-mono">
+                </div>
+                <div>
+                    <label class="block text-sm font-mono text-gray-400 mb-2">End Time (UTC)</label>
+                    <input type="datetime-local" name="end_time"
+                           value="{{ settings.end_time.strftime('%Y-%m-%dT%H:%M') if settings and settings.end_time else '' }}"
+                           class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white outline-none focus:border-cyber-primary font-mono">
+                </div>
+            </div>
+            
+            <div>
+                {{ form.flag_format.label(class="block text-sm font-mono text-gray-400 mb-2") }}
+                {{ form.flag_format(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white outline-none focus:border-cyber-primary font-mono") }}
+                <p class="text-xs text-gray-500 mt-1 font-mono">Displayed to users. E.g. XSS{...}</p>
+            </div>
+            
+            <div class="border-t border-cyber-border pt-4 space-y-4">
+                <div class="flex items-center justify-between p-3 bg-cyber-darker rounded border border-cyber-border">
+                    <div>
+                        <div class="text-sm font-mono font-bold text-white">Live Competition</div>
+                        <div class="text-xs text-gray-500 font-mono">Allows users to submit flags. Turning this off acts as a freeze.</div>
+                    </div>
+                    <div>
+                        {{ form.is_live(class="h-5 w-5 bg-cyber-darker border-cyber-border text-cyber-primary focus:ring-cyber-primary rounded") }}
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-cyber-darker rounded border border-cyber-border">
+                    <div>
+                        <div class="text-sm font-mono font-bold text-white">Freeze Scoreboard</div>
+                        <div class="text-xs text-gray-500 font-mono">Hides the live scoreboard from regular users (useful for dramatic endings).</div>
+                    </div>
+                    <div>
+                        {{ form.scoreboard_frozen(class="h-5 w-5 bg-cyber-darker border-cyber-border text-cyber-primary focus:ring-cyber-primary rounded") }}
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-cyber-darker rounded border border-cyber-border">
+                    <div>
+                        <div class="text-sm font-mono font-bold text-white">Registration Open</div>
+                        <div class="text-xs text-gray-500 font-mono">Allows new users to create accounts.</div>
+                    </div>
+                    <div>
+                        {{ form.registration_open(class="h-5 w-5 bg-cyber-darker border-cyber-border text-cyber-primary focus:ring-cyber-primary rounded") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-4">
+                {{ form.submit(class="w-full py-3 bg-cyber-primary/10 text-cyber-primary border border-cyber-primary rounded hover:bg-cyber-primary hover:text-cyber-dark font-mono font-bold transition-all cursor-pointer") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

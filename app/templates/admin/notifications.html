@@ -1,0 +1,63 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="space-y-6">
+    <!-- Send Notification Form -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-6">
+        <h2 class="font-mono font-bold text-white mb-4">Send Notification</h2>
+        <form method="POST" action="/admin/notifications">
+            {{ form.hidden_tag() }}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="md:col-span-2 text-cyber-primary">
+                    {{ form.user_id.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                    {{ form.user_id(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm") }}
+                </div>
+                <div class="md:col-span-2 text-cyber-primary">
+                    {{ form.title.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                    {{ form.title(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="Important Announcement") }}
+                </div>
+                <div class="md:col-span-2 text-cyber-primary">
+                    {{ form.message.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                    {{ form.message(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", rows="4", placeholder="Your message here...") }}
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-4">
+                {{ form.submit(class="px-6 py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded font-mono font-bold transition-all cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+
+    <!-- Recent Notifications Log -->
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+        <div class="p-4 bg-cyber-darker border-b border-cyber-border">
+            <h2 class="font-mono font-bold text-white">Recent Notifications</h2>
+        </div>
+        <table class="w-full text-left font-mono text-sm">
+            <thead class="bg-cyber-dark text-gray-400 border-b border-cyber-border">
+                <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">To User</th>
+                    <th class="px-4 py-3">Title</th>
+                    <th class="px-4 py-3 text-right">Sent At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notif in notifications %}
+                <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/50 text-gray-300">
+                    <td class="px-4 py-3">{{ notif.id }}</td>
+                    <td class="px-4 py-3 font-bold text-white">{{ notif.user.username if notif.user else 'Unknown' }}</td>
+                    <td class="px-4 py-3 text-cyber-primary">{{ notif.title }}</td>
+                    <td class="px-4 py-3 text-right text-gray-500 text-xs">{{ notif.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-500">No notifications sent yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

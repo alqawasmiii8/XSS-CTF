@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-mono font-bold text-white tracking-tight">Notifications</h1>
+        {% if notifications and notifications|selectattr("is_read", "equalto", false)|list|length > 0 %}
+        <form method="POST" action="/notifications">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="px-4 py-2 bg-cyber-darker text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded text-xs font-mono font-bold transition-all">
+                Mark all as read
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden flex flex-col gap-px bg-cyber-border">
+        {% for notif in notifications %}
+            <div class="p-6 bg-cyber-dark {% if not notif.is_read %}border-l-4 border-cyber-primary{% endif %} transition-colors relative">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-lg font-bold {% if not notif.is_read %}text-white{% else %}text-gray-400{% endif %}">
+                        {{ notif.title }}
+                        {% if not notif.is_read %}
+                        <span class="ml-2 px-2 py-0.5 bg-cyber-primary/20 text-cyber-primary text-xs rounded uppercase font-mono">New</span>
+                        {% endif %}
+                    </h3>
+                    <span class="text-xs text-gray-500 font-mono">{{ notif.created_at.strftime('%b %d, %H:%M') }}</span>
+                </div>
+                <p class="text-gray-300 whitespace-pre-line">{{ notif.message }}</p>
+            </div>
+        {% else %}
+            <div class="p-12 bg-cyber-dark text-center text-gray-500 font-mono">
+                No notifications found.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

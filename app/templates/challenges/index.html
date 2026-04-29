@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Challenges{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-mono font-bold text-white mb-4">Active <span class="text-cyber-primary neon-text">Challenges</span></h1>
+    </div>
+
+    <!-- Filter Buttons Placeholder -->
+    <div class="flex flex-wrap gap-4 mb-8 justify-center">
+        <button class="px-4 py-1 text-sm font-mono bg-cyber-primary text-cyber-dark rounded font-bold">All</button>
+        {% for category in categories %}
+            <button class="px-4 py-1 text-sm font-mono border border-cyber-border text-gray-400 rounded hover:border-cyber-primary hover:text-cyber-primary transition-all">{{ category.name }}</button>
+        {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for challenge in challenges %}
+        {% set is_solved = challenge.id in solved_ids %}
+        
+        <div class="bg-cyber-card border {% if is_solved %}border-green-500/50{% else %}border-cyber-border hover:border-cyber-primary{% endif %} rounded-lg p-6 card-hover relative overflow-hidden group">
+            
+            {% if is_solved %}
+            <div class="absolute top-0 right-0 bg-green-500/20 text-green-500 font-mono text-xs font-bold px-3 py-1 rounded-bl-lg">
+                SOLVED
+            </div>
+            {% endif %}
+
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-mono font-bold text-white group-hover:text-cyber-primary transition-colors">{{ challenge.title }}</h3>
+                <span class="text-cyber-primary font-mono font-bold">{{ challenge.points }} pts</span>
+            </div>
+            
+            <div class="flex items-center space-x-3 mb-6 font-mono text-xs">
+                <span class="bg-cyber-dark px-2 py-1 rounded text-cyber-secondary border border-cyber-secondary/30">{{ challenge.category.name if challenge.category else 'Misc' }}</span>
+                <span class="text-gray-500">{{ challenge.difficulty }}</span>
+            </div>
+
+            <a href="/challenges/{{ challenge.id }}" class="block w-full text-center py-2 bg-cyber-darker border border-cyber-border group-hover:border-cyber-primary rounded font-mono text-sm text-gray-300 group-hover:text-white transition-all">
+                View Challenge
+            </a>
+        </div>
+        {% endfor %}
+
+        {% if not challenges %}
+        <div class="col-span-full text-center text-gray-500 font-mono py-12">
+            No challenges are currently available. Check back later.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

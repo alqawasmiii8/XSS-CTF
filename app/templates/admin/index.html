@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row gap-6">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 flex-shrink-0 bg-cyber-card border border-cyber-border rounded-lg p-4 h-fit">
+        <h2 class="text-cyber-primary font-mono font-bold mb-4 px-2 uppercase tracking-wider text-sm">Admin Panel</h2>
+        <nav class="space-y-1 font-mono text-sm">
+            <a href="/admin/" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Dashboard Overview</a>
+            <a href="/admin/challenges" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/challenges' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Manage Challenges</a>
+            <a href="/admin/categories" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/categories' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Manage Categories</a>
+            <a href="/admin/teams" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/teams' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Manage Teams</a>
+            <a href="/admin/notifications" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/notifications' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Send Notifications</a>
+            <a href="/admin/pages" class="block px-2 py-2 rounded text-white {% if '/admin/pages' in request.path %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Manage Pages</a>
+            <a href="/admin/settings" class="block px-2 py-2 rounded text-white {% if request.path == '/admin/settings' %}bg-cyber-dark border border-cyber-primary text-cyber-primary{% else %}hover:bg-cyber-darker hover:text-cyber-primary{% endif %} transition-colors">Event Settings</a>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-grow">
+        {% block admin_content %}
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6">
+            <h1 class="text-3xl font-mono font-bold text-white mb-6">System <span class="text-cyber-secondary neon-text">Overview</span></h1>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Stat Cards -->
+                <div class="bg-cyber-darker border border-cyber-border rounded p-4 text-center">
+                    <div class="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1">Total Users</div>
+                    <div class="text-3xl font-mono font-bold text-white">{{ users }}</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded p-4 text-center">
+                    <div class="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1">Teams</div>
+                    <div class="text-3xl font-mono font-bold text-white">{{ teams }}</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded p-4 text-center">
+                    <div class="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1">Challenges</div>
+                    <div class="text-3xl font-mono font-bold text-cyber-primary">{{ challenges }}</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded p-4 text-center">
+                    <div class="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1">Total Solves</div>
+                    <div class="text-3xl font-mono font-bold text-green-500">{{ solves }}</div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <p class="text-gray-400 font-mono text-sm leading-relaxed">
+                    Welcome to the central control grid. From here you can provision challenges, manage competitors, and halt the simulation (freeze scoreboard). Note: Use the sidebar to navigate to specialized modules.
+                </p>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

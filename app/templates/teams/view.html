@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}{{ team.name }} — Team Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Team Header -->
+    <div class="bg-cyber-card border border-cyber-primary rounded-lg p-8 shadow-[0_0_30px_rgba(0,240,255,0.08)] neon-border relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-72 h-72 bg-cyber-primary opacity-5 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none"></div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div>
+                <p class="text-xs font-mono text-cyber-primary mb-1 tracking-widest uppercase">// Team Profile</p>
+                <h1 class="text-4xl font-mono font-bold text-white mb-2">
+                    {{ team.name }}
+                </h1>
+                <p class="text-sm font-mono text-gray-400">
+                    Captain: <span class="text-white">{{ team.captain.username }}</span>
+                    &nbsp;·&nbsp; Formed {{ team.created_at.strftime('%b %d, %Y') if team.created_at else '' }}
+                    &nbsp;·&nbsp; <span class="text-gray-500">{{ team.members.count() }} member{{ 's' if team.members.count() != 1 }}</span>
+                </p>
+            </div>
+            <!-- Stats -->
+            <div class="flex gap-4 text-center shrink-0">
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg px-5 py-3">
+                    <div class="text-2xl font-mono font-bold text-cyber-primary">{{ solves|length }}</div>
+                    <div class="text-xs text-gray-500 font-mono">Solves</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg px-5 py-3">
+                    <div class="text-2xl font-mono font-bold text-cyber-secondary">
+                        {{ solves|sum(attribute='points_awarded') }}
+                    </div>
+                    <div class="text-xs text-gray-500 font-mono">Points</div>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-lg px-5 py-3">
+                    <div class="text-2xl font-mono font-bold text-red-400">
+                        {{ solves|selectattr('is_first_blood')|list|length }}
+                    </div>
+                    <div class="text-xs text-gray-500 font-mono">🩸 Bloods</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Code (only visible to team members) -->
+    {% if current_user.is_authenticated and current_user.team and current_user.team.id == team.id %}
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-5">
+        <div class="text-xs font-mono text-gray-400 mb-1">Team Invite Code</div>
+        <div class="flex items-center gap-3">
+            <code id="invite-code" class="flex-1 bg-cyber-darker border border-cyber-border rounded px-4 py-2 text-cyber-primary font-mono text-sm tracking-widest">
+                {{ team.invite_code }}
+            </code>
+            <button onclick="navigator.clipboard.writeText('{{ team.invite_code }}'); this.textContent='✓ Copied!'; setTimeout(()=>this.textContent='Copy',2000);"
+                    class="px-4 py-2 text-xs font-mono border border-cyber-primary text-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded transition-all">
+                Copy
+            </button>
+        </div>
+        <p class="text-xs text-gray-500 font-mono mt-2">Share this code with teammates so they can join.</p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Members -->
+        <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+            <div class="p-4 bg-cyber-darker border-b border-cyber-border">
+                <h2 class="font-mono font-bold text-white">Members ({{ team.members.count() }})</h2>
+            </div>
+            <ul class="divide-y divide-cyber-border/50">
+                {% for member in team.members %}
+                <li class="flex items-center justify-between px-5 py-3 hover:bg-cyber-darker/40 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-primary/30 to-cyber-secondary/20 border border-cyber-border flex items-center justify-center text-cyber-primary font-mono font-bold text-sm">
+                            {{ member.user.username[0].upper() }}
+                        </div>
+                        <span class="font-mono text-white text-sm">{{ member.user.username }}</span>
+                    </div>
+                    {% if member.user_id == team.captain_id %}
+                    <span class="text-xs font-mono px-2 py-0.5 bg-cyber-primary/10 text-cyber-primary border border-cyber-primary/30 rounded">★ Captain</span>
+                    {% else %}
+                    <span class="text-xs font-mono text-gray-500">Member</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Hacker Radar Chart -->
+        {% if category_scores %}
+        <div class="bg-cyber-card border border-cyber-border rounded-lg p-6 flex flex-col">
+            <h2 class="font-mono font-bold text-white mb-4">Hacker Profile</h2>
+            <div class="flex-1 flex items-center justify-center" style="min-height:220px;">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Solve Timeline -->
+    {% if solves %}
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+        <div class="p-4 bg-cyber-darker border-b border-cyber-border">
+            <h2 class="font-mono font-bold text-white">Flag Captures</h2>
+        </div>
+        <table class="w-full text-left font-mono text-sm">
+            <thead class="bg-cyber-dark text-gray-400 border-b border-cyber-border text-xs uppercase tracking-wider">
+                <tr>
+                    <th class="px-5 py-3">Challenge</th>
+                    <th class="px-5 py-3">Category</th>
+                    <th class="px-5 py-3">Capturer</th>
+                    <th class="px-5 py-3 text-right">Points</th>
+                    <th class="px-5 py-3 text-right hidden md:table-cell">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solve in solves %}
+                <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/50 text-gray-300">
+                    <td class="px-5 py-3 text-white font-bold">
+                        <a href="/challenges/{{ solve.challenge_id }}" class="hover:text-cyber-primary transition-colors">
+                            {{ solve.challenge.title }}
+                        </a>
+                        {% if solve.is_first_blood %}
+                        <span class="ml-2 text-xs text-red-400">🩸 First Blood</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-5 py-3 text-gray-400 text-xs">{{ solve.challenge.category.name if solve.challenge.category else '—' }}</td>
+                    <td class="px-5 py-3 text-gray-400">{{ solve.user.username }}</td>
+                    <td class="px-5 py-3 text-right text-cyber-primary font-bold">+{{ solve.points_awarded }}</td>
+                    <td class="px-5 py-3 text-right text-gray-500 text-xs hidden md:table-cell">
+                        {{ solve.solved_at.strftime('%b %d %H:%M') if solve.solved_at else '—' }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-12 text-center">
+        <p class="text-gray-500 font-mono">No challenges solved yet. Get hacking!</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if category_scores %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const labels = {{ category_scores.keys()|list|tojson }};
+    const dataValues = {{ category_scores.values()|list|tojson }};
+    
+    if (labels.length === 0 || dataValues.every(v => v === 0)) return;
+
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '{{ team.name }}',
+                data: dataValues,
+                borderColor: 'rgba(0, 240, 255, 1)',
+                backgroundColor: 'rgba(0, 240, 255, 0.1)',
+                pointBackgroundColor: 'rgba(0, 240, 255, 1)',
+                pointBorderColor: '#00f0ff',
+                pointHoverBackgroundColor: '#fff',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0d1117',
+                    borderColor: '#00f0ff',
+                    borderWidth: 1,
+                    titleColor: '#00f0ff',
+                    bodyColor: '#d1d5db',
+                    titleFont: { family: 'monospace' },
+                    bodyFont: { family: 'monospace' },
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255,255,255,0.05)' },
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    pointLabels: {
+                        color: '#9ca3af',
+                        font: { family: 'monospace', size: 11 }
+                    },
+                    ticks: {
+                        color: '#4b5563',
+                        backdropColor: 'transparent',
+                        font: { family: 'monospace', size: 9 },
+                        stepSize: 50,
+                    },
+                    beginAtZero: true,
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

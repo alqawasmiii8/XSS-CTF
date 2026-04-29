@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home{% endblock %} - XSSPloit CTF</title>
+    
+    <!-- Tailwind CSS (CDN for simple setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              cyber: {
+                dark: '#0a0a0f',
+                darker: '#050508',
+                card: '#12121a',
+                border: '#2a2a35',
+                primary: '#00f0ff',
+                secondary: '#ff003c',
+                accent: '#8a2be2'
+              }
+            },
+            fontFamily: {
+              mono: ['Fira Code', 'Courier New', 'monospace'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Custom CSS for Cyber theme tweaks -->
+    <style>
+        body {
+            color: #e2e8f0;
+        }
+        .neon-text {
+            text-shadow: 0 0 10px theme('colors.cyber.primary'), 0 0 20px theme('colors.cyber.primary');
+        }
+        .neon-border {
+            box-shadow: 0 0 10px theme('colors.cyber.primary');
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(0, 240, 255, 0.2);
+            border-color: theme('colors.cyber.primary');
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-cyber-darker min-h-screen flex flex-col font-sans antialiased text-gray-300 relative overflow-x-hidden">
+    
+    <!-- Background Grid -->
+    <div class="fixed inset-0 z-[-1] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsIDI1NSLCAyNTUsIDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-50"></div>
+
+    <!-- Navbar -->
+    {% include "includes/navbar.html" %}
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% set alert_class = 'bg-cyber-card border-cyber-primary text-cyber-primary' %}
+                    {% if category == 'error' %}
+                        {% set alert_class = 'bg-cyber-card border-cyber-secondary text-cyber-secondary' %}
+                    {% elif category == 'success' %}
+                        {% set alert_class = 'bg-cyber-card border-green-500 text-green-500' %}
+                    {% endif %}
+                    
+                    <div class="p-4 mb-4 border rounded-md shadow-lg flex items-center {{ alert_class }}" role="alert">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% include "includes/footer.html" %}
+
+    <script>
+        // Simple JS for dismissible alerts if needed
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

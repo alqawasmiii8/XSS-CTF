@@ -1,0 +1,28 @@
+{% extends "admin/index.html" %}
+
+{% block admin_content %}
+<div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+    <div class="p-6 bg-cyber-darker border-b border-cyber-border flex justify-between items-center">
+        <h2 class="font-mono font-bold text-white text-lg">Manage Pages</h2>
+    </div>
+    <div class="p-6">
+        <p class="text-gray-400 font-mono text-sm mb-6">Edit the content for the public-facing Rules and FAQ pages. HTML is supported.</p>
+        <div class="space-y-3">
+            {% for page in pages %}
+            <div class="flex items-center justify-between bg-cyber-darker border border-cyber-border rounded-lg px-5 py-4">
+                <div>
+                    <span class="font-mono font-bold text-white">{{ page.title }}</span>
+                    <span class="ml-3 text-xs text-gray-500 font-mono">/{{ page.slug }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="/{{ page.slug }}" target="_blank" class="text-xs font-mono text-gray-400 hover:text-white transition-colors">View →</a>
+                    <a href="/admin/pages/edit/{{ page.slug }}" class="px-4 py-1.5 text-xs font-mono bg-cyber-darker text-cyber-primary border border-cyber-primary rounded hover:bg-cyber-primary hover:text-cyber-dark transition-all">Edit</a>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-500 font-mono text-sm text-center py-8">No pages found. Seed the database first.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
