@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Registration — Under Maintenance{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center py-24 text-center">
+    <div class="bg-cyber-card border border-yellow-500/30 rounded-2xl p-12 max-w-lg shadow-[0_0_40px_rgba(234,179,8,0.05)]">
+        <div class="text-6xl mb-6">🔧</div>
+        <h1 class="text-3xl font-mono font-bold text-white mb-3">Registration <span class="text-yellow-400">Under Maintenance</span></h1>
+        <p class="text-gray-400 font-mono text-sm leading-relaxed mb-6">
+            Registration is currently undergoing maintenance.<br>
+            Please check back shortly — we'll be back online soon!
+        </p>
+        <div class="flex items-center justify-center gap-2 text-xs font-mono text-yellow-500/70 mb-6">
+            <span class="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+            Maintenance in progress
+        </div>
+        <div class="border-t border-cyber-border pt-6">
+            <p class="text-sm text-gray-500 font-mono">
+                Already have an account? 
+                <a href="/auth/login" class="text-cyber-primary hover:text-white transition-colors">Log in here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

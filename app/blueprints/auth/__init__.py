@@ -13,6 +13,11 @@ def register():
     
     from app.models import EventSettings
     settings = EventSettings.query.first()
+    
+    # Check maintenance mode
+    if settings and settings.registration_maintenance:
+        return render_template('auth/maintenance.html')
+    
     if settings and not settings.registration_open:
         flash('Registration is currently closed.', 'error')
         return redirect('/')

@@ -71,7 +71,7 @@
             <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3 border-b border-cyber-border pb-1">Attachments</h3>
             <div class="flex flex-wrap gap-4">
                 {% for chal_file in challenge.files %}
-                <a href="/challenges/{{ challenge.id }}/download/{{ chal_file.id }}" class="flex items-center gap-2 px-4 py-2 bg-cyber-darker border border-cyber-border rounded hover:border-cyber-primary hover:text-cyber-primary transition-colors text-sm font-mono text-gray-300">
+                <a href="{{ chal_file.url }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 bg-cyber-darker border border-cyber-border rounded hover:border-cyber-primary hover:text-cyber-primary transition-colors text-sm font-mono text-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     {{ chal_file.filename }}
                 </a>

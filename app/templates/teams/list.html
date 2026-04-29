@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}All Teams{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-mono font-bold text-white mb-4">All <span class="text-cyber-primary neon-text">Teams</span></h1>
+        <div class="flex items-center justify-center gap-6 text-sm font-mono text-gray-400">
+            <span class="flex items-center gap-2">
+                <span class="text-cyber-primary font-bold text-lg">{{ teams_data|length }}</span> Teams Registered
+            </span>
+        </div>
+    </div>
+
+    {% if teams_data %}
+    <div class="bg-cyber-card border border-cyber-border rounded-lg overflow-hidden">
+        <table class="w-full text-left font-mono text-sm">
+            <thead class="bg-cyber-darker text-gray-400 border-b border-cyber-border text-xs uppercase tracking-wider">
+                <tr>
+                    <th class="px-5 py-3 w-12">#</th>
+                    <th class="px-5 py-3">Team</th>
+                    <th class="px-5 py-3 text-center">Members</th>
+                    <th class="px-5 py-3 text-center">Solves</th>
+                    <th class="px-5 py-3 text-right">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in teams_data %}
+                <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/50 transition-colors text-gray-300 group">
+                    <td class="px-5 py-4 text-gray-500 font-bold">{{ loop.index }}</td>
+                    <td class="px-5 py-4">
+                        <a href="/team/{{ data.team.id }}" class="flex items-center gap-3 group-hover:text-cyber-primary transition-colors">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyber-primary/30 to-cyber-secondary/20 border border-cyber-border flex items-center justify-center text-cyber-primary font-mono font-bold text-sm shrink-0">
+                                {{ data.team.name[0].upper() }}
+                            </div>
+                            <div>
+                                <span class="text-white font-bold group-hover:text-cyber-primary transition-colors">{{ data.team.name }}</span>
+                                <div class="text-xs text-gray-500">
+                                    Captain: {{ data.team.captain.username }}
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+                    <td class="px-5 py-4 text-center">
+                        <span class="bg-cyber-darker border border-cyber-border rounded px-2 py-0.5 text-xs text-gray-400">{{ data.members_count }}</span>
+                    </td>
+                    <td class="px-5 py-4 text-center">
+                        <span class="text-white font-bold">{{ data.solves_count }}</span>
+                    </td>
+                    <td class="px-5 py-4 text-right">
+                        <span class="text-cyber-primary font-bold text-base">{{ data.score }}</span>
+                        <span class="text-gray-500 text-xs ml-1">pts</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-cyber-card border border-cyber-border rounded-lg p-12 text-center">
+        <div class="text-5xl mb-4">👥</div>
+        <p class="text-gray-500 font-mono">No teams have been created yet. Be the first!</p>
+        <a href="/team/" class="inline-block mt-4 px-6 py-2 bg-cyber-primary/10 text-cyber-primary border border-cyber-primary hover:bg-cyber-primary hover:text-cyber-dark rounded font-mono font-bold transition-all">
+            Create a Team
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -11,6 +11,7 @@
             <div class="hidden md:flex space-x-8 items-center font-mono text-sm">
                 <a href="/challenges" class="hover:text-cyber-primary transition-colors">Challenges</a>
                 <a href="/scoreboard" class="hover:text-cyber-primary transition-colors">Scoreboard</a>
+                <a href="/team/all" class="hover:text-cyber-primary transition-colors">Teams</a>
                 {% if current_user.is_authenticated %}
                     {% if current_user.team %}
                         <a href="/team/{{ current_user.team.id }}" class="hover:text-cyber-primary transition-colors flex items-center gap-1">

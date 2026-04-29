@@ -63,6 +63,31 @@
                         {{ form.registration_open(class="h-5 w-5 bg-cyber-darker border-cyber-border text-cyber-primary focus:ring-cyber-primary rounded") }}
                     </div>
                 </div>
+                
+                <div class="border-t border-yellow-500/20 pt-4 mt-2">
+                    <p class="text-xs font-mono text-yellow-400 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"></path></svg>
+                        Maintenance Mode — blocks access with a maintenance page
+                    </p>
+                    <div class="flex items-center justify-between p-3 bg-yellow-500/5 rounded border border-yellow-500/20">
+                        <div>
+                            <div class="text-sm font-mono font-bold text-white">🔧 Challenges Under Maintenance</div>
+                            <div class="text-xs text-gray-500 font-mono">Shows a maintenance page instead of the challenges list.</div>
+                        </div>
+                        <div>
+                            {{ form.challenges_maintenance(class="h-5 w-5 bg-cyber-darker border-cyber-border text-yellow-400 focus:ring-yellow-400 rounded") }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-yellow-500/5 rounded border border-yellow-500/20 mt-3">
+                        <div>
+                            <div class="text-sm font-mono font-bold text-white">🔧 Registration Under Maintenance</div>
+                            <div class="text-xs text-gray-500 font-mono">Shows a maintenance page instead of the registration form.</div>
+                        </div>
+                        <div>
+                            {{ form.registration_maintenance(class="h-5 w-5 bg-cyber-darker border-cyber-border text-yellow-400 focus:ring-yellow-400 rounded") }}
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="pt-4">

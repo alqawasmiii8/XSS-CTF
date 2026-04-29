@@ -1,9 +1,9 @@
 import os
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, flash, request, current_app, send_file
+from flask import Blueprint, render_template, redirect, flash, request, current_app
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Challenge, Category, Submission, Solve, EventSettings, Hint, HintUnlock, ChallengeFile
+from app.models import Challenge, Category, Submission, Solve, EventSettings, Hint, HintUnlock
 from app.forms.challenge import FlagSubmissionForm
 
 challenges_bp = Blueprint('challenges', __name__, url_prefix='/challenges')
@@ -11,6 +11,9 @@ challenges_bp = Blueprint('challenges', __name__, url_prefix='/challenges')
 @challenges_bp.route('/')
 @login_required
 def index():
+    # Check maintenance and competition status
+    settings = EventSettings.query.first()
+    
     categories = Category.query.all()
     # Eager load saves DB hits in template
     challenges = Challenge.query.filter_by(is_visible=True).all()
@@ -28,7 +31,8 @@ def index():
     return render_template('challenges/index.html', 
                            categories=categories, 
                            challenges=challenges,
-                           solved_ids=solved_challenge_ids)
+                           solved_ids=solved_challenge_ids,
+                           settings=settings)
 
 @challenges_bp.route('/<int:challenge_id>', methods=['GET', 'POST'])
 @login_required
@@ -164,15 +168,5 @@ def unlock_hint(challenge_id, hint_id):
     flash(f'Hint unlocked! (-{hint.cost} points)', 'success')
     return redirect(f'/challenges/{challenge_id}')
 
-@challenges_bp.route('/<int:challenge_id>/download/<int:file_id>')
-@login_required
-def download_file(challenge_id, file_id):
-    challenge = Challenge.query.filter_by(id=challenge_id, is_visible=True).first_or_404()
-    chal_file = ChallengeFile.query.filter_by(id=file_id, challenge_id=challenge.id).first_or_404()
-    
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], chal_file.stored_path)
-    if not os.path.exists(file_path):
-        flash('File not found on server.', 'error')
-        return redirect(f'/challenges/{challenge_id}')
-        
-    return send_file(file_path, as_attachment=True, download_name=chal_file.filename)
+
+

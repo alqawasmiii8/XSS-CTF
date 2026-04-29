@@ -67,12 +67,12 @@
             <ul class="divide-y divide-cyber-border/50">
                 {% for member in team.members %}
                 <li class="flex items-center justify-between px-5 py-3 hover:bg-cyber-darker/40 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-primary/30 to-cyber-secondary/20 border border-cyber-border flex items-center justify-center text-cyber-primary font-mono font-bold text-sm">
+                    <a href="/users/{{ member.user_id }}" class="flex items-center gap-3 group/member">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-primary/30 to-cyber-secondary/20 border border-cyber-border flex items-center justify-center text-cyber-primary font-mono font-bold text-sm group-hover/member:border-cyber-primary transition-all">
                             {{ member.user.username[0].upper() }}
                         </div>
-                        <span class="font-mono text-white text-sm">{{ member.user.username }}</span>
-                    </div>
+                        <span class="font-mono text-white text-sm group-hover/member:text-cyber-primary transition-all">{{ member.user.username }}</span>
+                    </a>
                     {% if member.user_id == team.captain_id %}
                     <span class="text-xs font-mono px-2 py-0.5 bg-cyber-primary/10 text-cyber-primary border border-cyber-primary/30 rounded">★ Captain</span>
                     {% else %}
@@ -122,7 +122,11 @@
                         {% endif %}
                     </td>
                     <td class="px-5 py-3 text-gray-400 text-xs">{{ solve.challenge.category.name if solve.challenge.category else '—' }}</td>
-                    <td class="px-5 py-3 text-gray-400">{{ solve.user.username }}</td>
+                    <td class="px-5 py-3 text-gray-400">
+                        <a href="/users/{{ solve.user_id }}" class="hover:text-cyber-primary transition-colors">
+                            {{ solve.user.username }}
+                        </a>
+                    </td>
                     <td class="px-5 py-3 text-right text-cyber-primary font-bold">+{{ solve.points_awarded }}</td>
                     <td class="px-5 py-3 text-right text-gray-500 text-xs hidden md:table-cell">
                         {{ solve.solved_at.strftime('%b %d %H:%M') if solve.solved_at else '—' }}

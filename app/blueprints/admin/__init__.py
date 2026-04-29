@@ -1,6 +1,3 @@
-import os
-import uuid
-from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, redirect, flash, request, current_app
 from app.extensions import db
 from app.models import Challenge, Category, User, Team, TeamMember, Solve, EventSettings, Notification, Hint, ChallengeFile, Page
@@ -83,24 +80,19 @@ def edit_challenge(id):
         if form.flag.data and form.flag.data.strip():
             chal.set_flag(form.flag.data.strip())
             
-        # Handle file uploads
-        if 'files' in request.files:
-            files = request.files.getlist('files')
-            for file in files:
-                if file.filename:
-                    original_filename = secure_filename(file.filename)
-                    # Generate unique name for disk
-                    unique_name = str(uuid.uuid4()) + "_" + original_filename
-                    save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_name)
-                    
-                    file.save(save_path)
-                    
-                    chal_file = ChallengeFile(
-                        challenge_id=chal.id,
-                        filename=original_filename,
-                        stored_path=unique_name
-                    )
-                    db.session.add(chal_file)
+        # Handle external file URLs
+        file_names = request.form.getlist('new_file_names[]')
+        file_urls = request.form.getlist('new_file_urls[]')
+        for name, url in zip(file_names, file_urls):
+            name = name.strip()
+            url = url.strip()
+            if name and url:
+                chal_file = ChallengeFile(
+                    challenge_id=chal.id,
+                    filename=name,
+                    url=url
+                )
+                db.session.add(chal_file)
             
         db.session.commit()
         flash(f"Challenge '{chal.title}' updated successfully.", 'success')
@@ -121,11 +113,6 @@ def delete_challenge_file(file_id):
     chal_file = ChallengeFile.query.get_or_404(file_id)
     chal_id = chal_file.challenge_id
     
-    # Remove from disk
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], chal_file.stored_path)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        
     db.session.delete(chal_file)
     db.session.commit()
     

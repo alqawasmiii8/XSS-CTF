@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Profile — {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8">
+    
+    <!-- User Header Card -->
+    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-8 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-cyber-primary opacity-[0.02] rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+            <!-- Avatar -->
+            <div class="w-28 h-28 rounded-2xl bg-gradient-to-br from-cyber-primary/10 to-cyber-secondary/10 border border-cyber-border flex items-center justify-center overflow-hidden shrink-0">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar }}" class="w-full h-full object-cover">
+                {% else %}
+                    <span class="text-3xl font-mono font-bold text-cyber-primary">{{ user.username[0].upper() }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 text-center md:text-left space-y-3">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <h1 class="text-3xl font-mono font-bold text-white tracking-tight">{{ user.username }}</h1>
+                    <span class="px-2 py-0.5 rounded bg-cyber-darker border border-cyber-border text-gray-500 text-[10px] font-mono uppercase tracking-widest">Agent</span>
+                </div>
+                
+                {% if user.bio %}
+                    <p class="text-sm font-mono text-gray-400 max-w-xl leading-relaxed italic">"{{ user.bio }}"</p>
+                {% endif %}
+
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-5 pt-1">
+                    {% if user.country %}
+                    <div class="flex items-center gap-2 text-xs font-mono text-gray-500">
+                        <svg class="w-4 h-4 text-cyber-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        {{ user.country }}
+                    </div>
+                    {% endif %}
+                    {% if user.team %}
+                    <a href="/team/{{ user.team.id }}" class="flex items-center gap-2 text-xs font-mono text-cyber-secondary hover:underline transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Part of {{ user.team.name }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Individual Stats -->
+            <div class="shrink-0 flex gap-6">
+                <div class="text-center">
+                    <p class="text-2xl font-mono font-bold text-white">{{ solves|length }}</p>
+                    <p class="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">Solves</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-mono font-bold text-cyber-primary">{{ total_points }}</p>
+                    <p class="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">Contribution</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solve History -->
+    <div class="bg-cyber-card border border-cyber-border rounded-2xl overflow-hidden">
+        <div class="p-5 border-b border-cyber-border bg-cyber-darker/50">
+            <h2 class="text-lg font-mono font-bold text-white">Capture History</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-sm">
+                <thead class="bg-cyber-dark text-gray-500 text-xs uppercase tracking-widest border-b border-cyber-border">
+                    <tr>
+                        <th class="px-6 py-4">Challenge</th>
+                        <th class="px-6 py-4">Category</th>
+                        <th class="px-6 py-4 text-right">Points</th>
+                        <th class="px-6 py-4 text-right">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-cyber-border/30">
+                    {% for solve in solves %}
+                    <tr class="hover:bg-cyber-darker/40 transition-colors">
+                        <td class="px-6 py-4 font-bold text-white">
+                            <a href="/challenges/{{ solve.challenge_id }}" class="hover:text-cyber-primary transition-colors">{{ solve.challenge.title }}</a>
+                            {% if solve.is_first_blood %}
+                            <span class="ml-2 text-[9px] text-red-500 border border-red-500/20 px-1 rounded uppercase">Blood</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-gray-400">{{ solve.challenge.category.name }}</td>
+                        <td class="px-6 py-4 text-right text-cyber-primary font-bold">+{{ solve.points_awarded }}</td>
+                        <td class="px-6 py-4 text-right text-gray-500 text-xs">{{ solve.solved_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">No flags captured by this agent yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

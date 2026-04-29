@@ -9,6 +9,10 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard-to-guess-string'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
+    @classmethod
+    def init_app(cls, app):
+        pass
+    
     # Session / Cookie settings for security
     SESSION_COOKIE_SECURE = os.environ.get('FLASK_ENV') == 'production'
     SESSION_COOKIE_HTTPONLY = True
@@ -37,6 +41,12 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    
+    # Force SECRET_KEY to be set in production — never fall back to default
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError('SECRET_KEY environment variable must be set in production!')
+    
     # In production DATABASE_URL must be set
     db_url = os.environ.get('DATABASE_URL')
     if db_url:

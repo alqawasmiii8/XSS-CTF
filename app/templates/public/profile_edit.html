@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="text-center mb-10">
+        <h1 class="text-3xl font-mono font-bold text-white mb-2">Edit <span class="text-cyber-primary neon-text">Profile</span></h1>
+        <p class="text-gray-400 font-mono text-sm italic">// Adjust your operational parameters</p>
+    </div>
+
+    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-8 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="space-y-6">
+                <!-- Bio -->
+                <div>
+                    {{ form.bio.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2 uppercase tracking-widest") }}
+                    {{ form.bio(class="w-full bg-cyber-darker border border-cyber-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono transition-all", placeholder="Tell us about your hacking journey...", rows="4") }}
+                    {% for error in form.bio.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Avatar URL -->
+                <div>
+                    {{ form.avatar.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2 uppercase tracking-widest") }}
+                    {{ form.avatar(class="w-full bg-cyber-darker border border-cyber-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono transition-all", placeholder="https://image-host.com/my-avatar.png") }}
+                    <p class="text-[10px] text-gray-500 mt-2 font-mono italic">Enter a URL for your avatar image. Square images work best.</p>
+                    {% for error in form.avatar.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Country -->
+                <div>
+                    {{ form.country.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2 uppercase tracking-widest") }}
+                    {{ form.country(class="w-full bg-cyber-darker border border-cyber-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono transition-all", placeholder="Global Operations Center") }}
+                    {% for error in form.country.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-4 flex gap-4">
+                    <a href="/dashboard" class="flex-1 text-center py-3 px-4 border border-cyber-border rounded-xl text-sm font-mono font-bold text-gray-400 hover:text-white hover:border-white transition-all">
+                        Cancel
+                    </a>
+                    {{ form.submit(class="flex-[2] py-3 px-4 border border-transparent rounded-xl text-sm font-mono font-bold text-cyber-darker bg-cyber-primary hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all cursor-pointer") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

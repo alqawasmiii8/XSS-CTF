@@ -71,8 +71,8 @@ class ChallengeFile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.id'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False) # Original filename
-    stored_path = db.Column(db.String(255), nullable=False) # Path on server disk
+    filename = db.Column(db.String(255), nullable=False) # Display name for the file
+    url = db.Column(db.String(512), nullable=False)       # External download URL (Google Drive, Dropbox, etc.)
     
     challenge = db.relationship('Challenge', back_populates='files')
 

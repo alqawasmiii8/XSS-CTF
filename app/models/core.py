@@ -35,6 +35,8 @@ class EventSettings(db.Model):
     is_live = db.Column(db.Boolean, default=False)
     scoreboard_frozen = db.Column(db.Boolean, default=False)
     registration_open = db.Column(db.Boolean, default=True)
+    challenges_maintenance = db.Column(db.Boolean, default=False)
+    registration_maintenance = db.Column(db.Boolean, default=False)
     flag_format = db.Column(db.String(100), default='XSS{.*}')
 
 class AdminLog(db.Model):

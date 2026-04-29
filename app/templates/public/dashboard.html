@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    
+    <!-- User Header Card -->
+    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-8 relative overflow-hidden group">
+        <!-- Background Decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-cyber-primary opacity-[0.03] rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyber-secondary opacity-[0.03] rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+            <!-- Avatar -->
+            <div class="relative">
+                <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-cyber-primary/20 to-cyber-secondary/20 border-2 border-cyber-border group-hover:border-cyber-primary transition-all duration-500 flex items-center justify-center overflow-hidden">
+                    {% if current_user.avatar %}
+                        <img src="{{ current_user.avatar }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <span class="text-4xl font-mono font-bold text-cyber-primary">{{ current_user.username[0].upper() }}</span>
+                    {% endif %}
+                </div>
+                <div class="absolute -bottom-2 -right-2 bg-cyber-darker border border-cyber-border px-3 py-1 rounded-full text-[10px] font-mono text-gray-400 group-hover:text-cyber-primary group-hover:border-cyber-primary transition-all">
+                    Agent ID: #{{ current_user.id }}
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 text-center md:text-left space-y-2">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <h1 class="text-4xl font-mono font-bold text-white tracking-tight">{{ current_user.username }}</h1>
+                    <span class="px-3 py-1 rounded bg-cyber-primary/10 border border-cyber-primary/30 text-cyber-primary text-xs font-mono font-bold uppercase tracking-widest">{{ current_user.role }}</span>
+                    <a href="/profile/edit" class="ml-auto md:ml-0 text-[10px] font-mono text-gray-500 hover:text-cyber-primary border border-cyber-border hover:border-cyber-primary px-2 py-0.5 rounded transition-all">Edit Profile</a>
+                </div>
+                <p class="text-gray-400 font-mono">{{ current_user.email }}</p>
+                {% if current_user.bio %}
+                    <p class="text-sm font-mono text-gray-500 max-w-lg mx-auto md:mx-0 pt-1 leading-relaxed">{{ current_user.bio }}</p>
+                {% endif %}
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+                    {% if current_user.country %}
+                    <div class="flex items-center gap-2 text-xs font-mono text-gray-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        {{ current_user.country }}
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center gap-2 text-xs font-mono text-gray-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Joined {{ current_user.created_at.strftime('%B %Y') }}
+                    </div>
+                    {% if current_user.team %}
+                    <a href="/team/{{ current_user.team.id }}" class="flex items-center gap-2 text-xs font-mono text-cyber-secondary hover:text-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Team: {{ current_user.team.name }}
+                    </a>
+                    {% else %}
+                    <a href="/team/" class="flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-cyber-primary transition-colors italic">
+                        No Team — Create or Join one
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Stats Quick View -->
+            <div class="grid grid-cols-2 gap-4 w-full md:w-auto shrink-0">
+                <div class="bg-cyber-darker border border-cyber-border rounded-xl p-4 text-center group/stat hover:border-cyber-primary transition-all">
+                    <p class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1 group-hover/stat:text-cyber-primary">Global Rank</p>
+                    <p class="text-3xl font-mono font-bold text-white">#{{ rank }}</p>
+                </div>
+                <div class="bg-cyber-darker border border-cyber-border rounded-xl p-4 text-center group/stat hover:border-cyber-secondary transition-all">
+                    <p class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1 group-hover/stat:text-cyber-secondary">Score</p>
+                    <p class="text-3xl font-mono font-bold text-white">{{ total_points }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Solves Timeline -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-cyber-border flex items-center justify-between">
+                    <h2 class="text-xl font-mono font-bold text-white flex items-center gap-3">
+                        <svg class="w-5 h-5 text-cyber-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Recent <span class="text-cyber-primary">Captures</span>
+                    </h2>
+                    <span class="text-xs font-mono text-gray-500">{{ solves_count }} total solves</span>
+                </div>
+                <div class="divide-y divide-cyber-border/50">
+                    {% for solve in recent_solves %}
+                    <div class="p-6 hover:bg-cyber-darker/50 transition-colors flex items-center justify-between group">
+                        <div class="space-y-1">
+                            <h3 class="text-white font-mono font-bold group-hover:text-cyber-primary transition-colors">
+                                <a href="/challenges/{{ solve.challenge_id }}">{{ solve.challenge.title }}</a>
+                                {% if solve.is_first_blood %}
+                                <span class="ml-2 text-[10px] bg-red-500/10 text-red-500 border border-red-500/30 px-2 py-0.5 rounded uppercase font-bold tracking-tighter">🩸 First Blood</span>
+                                {% endif %}
+                            </h3>
+                            <div class="flex items-center gap-3 text-xs font-mono text-gray-500">
+                                <span>{{ solve.challenge.category.name }}</span>
+                                <span>•</span>
+                                <span>{{ solve.solved_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-cyber-primary font-mono font-bold">+{{ solve.points_awarded }}</span>
+                            <p class="text-[10px] text-gray-600 font-mono uppercase tracking-widest">Points</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-12 text-center text-gray-500 font-mono italic">
+                        No flags captured yet. Start hacking!
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if recent_solves %}
+                <div class="p-4 bg-cyber-darker/30 text-center">
+                    <a href="/challenges" class="text-xs font-mono text-gray-400 hover:text-cyber-primary transition-colors underline decoration-cyber-border underline-offset-4">Browse more challenges</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column Sidebar -->
+        <div class="space-y-8">
+            <!-- Achievements / Status -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                <h2 class="text-lg font-mono font-bold text-white mb-6 border-b border-cyber-border pb-3">Operational Status</h2>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono uppercase tracking-widest">
+                            <span class="text-gray-400">System Accuracy</span>
+                            <span class="text-cyber-primary">85%</span>
+                        </div>
+                        <div class="h-1 w-full bg-cyber-darker rounded-full overflow-hidden border border-cyber-border">
+                            <div class="h-full bg-cyber-primary shadow-[0_0_10px_rgba(0,240,255,0.5)]" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono uppercase tracking-widest">
+                            <span class="text-gray-400">Threat Level</span>
+                            <span class="text-cyber-secondary">Elevated</span>
+                        </div>
+                        <div class="h-1 w-full bg-cyber-darker rounded-full overflow-hidden border border-cyber-border">
+                            <div class="h-full bg-cyber-secondary shadow-[0_0_10px_rgba(255,0,60,0.5)]" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                <h2 class="text-lg font-mono font-bold text-white mb-4">Quick Access</h2>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="/scoreboard" class="p-3 bg-cyber-darker border border-cyber-border rounded-lg flex items-center gap-3 hover:border-cyber-primary transition-all group">
+                        <div class="w-8 h-8 rounded bg-cyber-primary/10 flex items-center justify-center text-cyber-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <span class="font-mono text-sm text-gray-300 group-hover:text-white">Live Scoreboard</span>
+                    </a>
+                    <a href="/notifications" class="p-3 bg-cyber-darker border border-cyber-border rounded-lg flex items-center gap-3 hover:border-cyber-primary transition-all group">
+                        <div class="w-8 h-8 rounded bg-cyber-secondary/10 flex items-center justify-center text-cyber-secondary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        </div>
+                        <span class="font-mono text-sm text-gray-300 group-hover:text-white">Encrypted Comms</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

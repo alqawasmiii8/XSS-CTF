@@ -4,8 +4,60 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
+
+    {# ── Maintenance Mode Screen ── #}
+    {% if settings and settings.challenges_maintenance %}
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="bg-cyber-card border border-yellow-500/30 rounded-2xl p-12 max-w-lg shadow-[0_0_40px_rgba(234,179,8,0.05)]">
+            <div class="text-6xl mb-6">🔧</div>
+            <h1 class="text-3xl font-mono font-bold text-white mb-3">Under <span class="text-yellow-400">Maintenance</span></h1>
+            <p class="text-gray-400 font-mono text-sm leading-relaxed mb-6">
+                The challenges section is currently undergoing maintenance.<br>
+                Please check back shortly — we'll be back online soon!
+            </p>
+            <div class="flex items-center justify-center gap-2 text-xs font-mono text-yellow-500/70">
+                <span class="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                Maintenance in progress
+            </div>
+        </div>
+    </div>
+
+    {# ── Competition Not Live Screen ── #}
+    {% elif settings and not settings.is_live %}
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="bg-cyber-card border border-cyber-border rounded-2xl p-12 max-w-lg shadow-[0_0_40px_rgba(0,240,255,0.03)]">
+            <div class="text-6xl mb-6">⏳</div>
+            <h1 class="text-3xl font-mono font-bold text-white mb-3">Competition <span class="text-cyber-primary neon-text">Not Active</span></h1>
+            <p class="text-gray-400 font-mono text-sm leading-relaxed mb-6">
+                The competition hasn't started yet or is currently paused.<br>
+                No challenges are available at this time.
+            </p>
+            {% if settings and settings.start_time %}
+            <div class="bg-cyber-darker border border-cyber-border rounded-lg p-4 mb-4">
+                <p class="text-xs text-gray-500 font-mono mb-1">Starts at</p>
+                <p class="text-cyber-primary font-mono font-bold">{{ settings.start_time.strftime('%b %d, %Y — %H:%M UTC') }}</p>
+            </div>
+            {% endif %}
+            <div class="flex items-center justify-center gap-2 text-xs font-mono text-gray-500">
+                <span class="inline-block w-2 h-2 bg-gray-500 rounded-full"></span>
+                Waiting for competition to go live
+            </div>
+        </div>
+    </div>
+
+    {# ── Normal Challenges View ── #}
+    {% else %}
     <div class="text-center mb-12">
         <h1 class="text-4xl font-mono font-bold text-white mb-4">Active <span class="text-cyber-primary neon-text">Challenges</span></h1>
+        <div class="flex items-center justify-center gap-6 text-sm font-mono text-gray-400">
+            <span class="flex items-center gap-2">
+                <span class="text-cyber-primary font-bold text-lg">{{ challenges|length }}</span> Challenges
+            </span>
+            <span class="text-cyber-border">|</span>
+            <span class="flex items-center gap-2">
+                <span class="text-cyber-secondary font-bold text-lg">{{ categories|length }}</span> Categories
+            </span>
+        </div>
     </div>
 
     <!-- Filter Buttons Placeholder -->
@@ -50,5 +102,6 @@
         </div>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -38,6 +38,8 @@ class EventSettingsForm(FlaskForm):
     is_live = BooleanField('Competition is Live')
     scoreboard_frozen = BooleanField('Freeze Scoreboard')
     registration_open = BooleanField('Registration Open')
+    challenges_maintenance = BooleanField('Challenges Under Maintenance')
+    registration_maintenance = BooleanField('Registration Under Maintenance')
     flag_format = StringField('Global Flag Format (regex or template)')
     submit = SubmitField('Update Settings')
 
