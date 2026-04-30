@@ -19,6 +19,15 @@ def create_app(config_name='default'):
     login_manager.init_app(app)
     csrf.init_app(app)
     limiter.init_app(app)
+
+    # Test DB Connection on Startup
+    with app.app_context():
+        try:
+            from sqlalchemy import text
+            db.session.execute(text('SELECT 1'))
+            print("✅ Database connection successful!")
+        except Exception as e:
+            print(f"❌ Database connection failed: {e}")
     
     # Import and register blueprints
     from .blueprints.public import public_bp

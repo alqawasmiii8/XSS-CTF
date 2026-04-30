@@ -47,21 +47,24 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     
-    # Force SECRET_KEY to be set in production — never fall back to default
     SECRET_KEY = os.environ.get('SECRET_KEY')
     if not SECRET_KEY:
         raise ValueError('SECRET_KEY environment variable must be set in production!')
     
-    # In production DATABASE_URL must be set
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
+        # SQLAlchemy 1.4+ requires 'postgresql://' instead of 'postgres://'
         if db_url.startswith("postgres://"):
             db_url = db_url.replace("postgres://", "postgresql://", 1)
-            
+        
+        # Supabase often requires sslmode=require for external connections
         if "?" in db_url:
-            base_url, query = db_url.split("?", 1)
-            params = [p for p in query.split("&") if not p.startswith("pgbouncer=")]
-            db_url = f"{base_url}?{'&'.join(params)}" if params else base_url
+            if "sslmode=" not in db_url:
+                db_url += "&sslmode=require"
+            # Remove pgbouncer if it causes issues, but Supabase usually handles it
+        else:
+            db_url += "?sslmode=require"
+            
     SQLALCHEMY_DATABASE_URI = db_url
     
     @classmethod
