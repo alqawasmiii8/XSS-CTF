@@ -55,19 +55,16 @@ class ProductionConfig(Config):
     
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
-        # SQLAlchemy 1.4+ requires 'postgresql://' instead of 'postgres://'
         if db_url.startswith("postgres://"):
             db_url = db_url.replace("postgres://", "postgresql+pg8000://", 1)
         elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+pg8000://"):
             db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
         
-        # Supabase often requires sslmode=require for external connections
+        # Clean up pgbouncer if present
         if "?" in db_url:
-            if "sslmode=" not in db_url:
-                db_url += "&sslmode=require"
-            # Remove pgbouncer if it causes issues, but Supabase usually handles it
-        else:
-            db_url += "?sslmode=require"
+            base_url, query = db_url.split("?", 1)
+            params = [p for p in query.split("&") if not p.startswith("pgbouncer=")]
+            db_url = f"{base_url}?{'&'.join(params)}" if params else base_url
             
     SQLALCHEMY_DATABASE_URI = db_url
     
