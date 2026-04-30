@@ -60,7 +60,7 @@ class ChallengeView(db.Model):
     first_viewed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User')
-    challenge = db.relationship('Challenge')
+    challenge = db.relationship('Challenge', back_populates='challenge_views')
 
     __table_args__ = (
         db.UniqueConstraint('user_id', 'challenge_id', name='_user_challenge_view_uc'),

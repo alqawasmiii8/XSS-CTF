@@ -43,6 +43,7 @@ class Challenge(db.Model):
     hints = db.relationship('Hint', back_populates='challenge', cascade="all, delete-orphan")
     submissions = db.relationship('Submission', back_populates='challenge', lazy='dynamic', cascade="all, delete-orphan")
     solves = db.relationship('Solve', back_populates='challenge', lazy='dynamic', cascade="all, delete-orphan")
+    challenge_views = db.relationship('ChallengeView', back_populates='challenge', cascade="all, delete-orphan")
 
     def get_current_points(self, solve_count: int | None = None) -> int:
         """Quadratic decay: points fall from initial to minimum over decay_limit solves."""
