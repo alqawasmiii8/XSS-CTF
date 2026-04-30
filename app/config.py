@@ -28,14 +28,14 @@ class DevelopmentConfig(Config):
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
         if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql+pg8000://", 1)
-        elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+pg8000://"):
-            db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
             
+        # Remove pgbouncer=true if present as it can cause issues with some drivers
         if "?" in db_url:
             base_url, query = db_url.split("?", 1)
             params = [p for p in query.split("&") if not p.startswith("pgbouncer=")]
             db_url = f"{base_url}?{'&'.join(params)}" if params else base_url
+            
     SQLALCHEMY_DATABASE_URI = db_url or \
         'sqlite:///' + os.path.join(os.path.dirname(basedir), 'ctf.db')
 
@@ -56,9 +56,7 @@ class ProductionConfig(Config):
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
         if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql+pg8000://", 1)
-        elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+pg8000://"):
-            db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
             
         if "?" in db_url:
             base_url, query = db_url.split("?", 1)
