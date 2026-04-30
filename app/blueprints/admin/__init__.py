@@ -387,6 +387,7 @@ def ban_user(user_id):
         return redirect('/admin/anticheat')
         
     user.is_banned = not user.is_banned
+    user.is_active = not user.is_banned
     db.session.commit()
     
     status = 'banned' if user.is_banned else 'unbanned'

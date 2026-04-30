@@ -126,6 +126,21 @@ def view(challenge_id):
             flash(f'Correct Flag! +{new_points} pts 🎉', 'success')
         else:
             db.session.commit()
+            
+            # --- Anticheat Auto-Ban Detection ---
+            if settings and settings.anticheat_flag_spam_action != 'ignore':
+                total_wrong = Submission.query.filter_by(user_id=current_user.id, is_correct=False).count()
+                if total_wrong >= settings.anticheat_flag_spam_threshold and not current_user.is_admin():
+                    if settings.anticheat_flag_spam_action == 'ban':
+                        current_user.is_banned = True
+                        current_user.is_active = False
+                        db.session.commit()
+                        # The next request will be caught by before_request and redirect to /auth/banned
+                        return redirect('/auth/banned')
+                    elif settings.anticheat_flag_spam_action == 'notify':
+                        # Admin notification could be added here
+                        pass
+            
             flash('Incorrect Flag.', 'error')
             
         return redirect(f'/challenges/{challenge_id}')

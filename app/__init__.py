@@ -48,22 +48,31 @@ def create_app(config_name='default'):
     register_error_handlers(app)
     # Single Session Enforcement
     @app.before_request
-    def check_single_session():
-        from flask_login import current_user
+    def check_user_status():
+        from flask_login import current_user, logout_user
         from flask import session, flash, redirect, request
         
-        # Don't check static files to avoid overhead
-        if request.endpoint and request.endpoint.startswith('static'):
+        # Don't check static files or the banned page itself to avoid infinite loops
+        if request.endpoint and (request.endpoint.startswith('static') or 
+                               request.endpoint == 'auth.banned' or 
+                               request.endpoint == 'auth.logout'):
             return
             
         if current_user.is_authenticated:
+            # 1. Single Session Enforcement
             session_token = session.get('session_token')
             if session_token and current_user.session_token and session_token != current_user.session_token:
-                from flask_login import logout_user
                 logout_user()
                 session.clear()
                 flash('You have been logged out because your account was accessed from another location.', 'error')
                 return redirect('/auth/login')
+                
+            # 2. Ban Check Enforcement
+            if hasattr(current_user, 'is_banned') and current_user.is_banned:
+                logout_user()
+                session.clear()
+                # No flash here as the banned page explains it clearly
+                return redirect('/auth/banned')
 
     return app
 
