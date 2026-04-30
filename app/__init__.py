@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template
 from .config import config
-from .extensions import db, migrate, login_manager, csrf
+from .extensions import db, migrate, login_manager, csrf, limiter
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -18,6 +18,7 @@ def create_app(config_name='default'):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
+    limiter.init_app(app)
     
     # Import and register blueprints
     from .blueprints.public import public_bp
@@ -36,7 +37,25 @@ def create_app(config_name='default'):
     
     # Register error handlers
     register_error_handlers(app)
-    
+    # Single Session Enforcement
+    @app.before_request
+    def check_single_session():
+        from flask_login import current_user
+        from flask import session, flash, redirect, request
+        
+        # Don't check static files to avoid overhead
+        if request.endpoint and request.endpoint.startswith('static'):
+            return
+            
+        if current_user.is_authenticated:
+            session_token = session.get('session_token')
+            if session_token and current_user.session_token and session_token != current_user.session_token:
+                from flask_login import logout_user
+                logout_user()
+                session.clear()
+                flash('You have been logged out because your account was accessed from another location.', 'error')
+                return redirect('/auth/login')
+
     return app
 
 def register_error_handlers(app):

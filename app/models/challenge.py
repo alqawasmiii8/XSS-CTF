@@ -30,6 +30,7 @@ class Challenge(db.Model):
     points         = db.Column(db.Integer, nullable=False, default=500) # current live value (cached)
     
     description = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(100), nullable=True, default='Unknown')  # Challenge author display name
     
     # Store exact flag hash or a string used for verification
     flag_hash = db.Column(db.String(256), nullable=False) 

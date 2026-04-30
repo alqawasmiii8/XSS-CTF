@@ -1,7 +1,17 @@
 from datetime import datetime
+import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.extensions import db
+
+class LoginLog(db.Model):
+    __tablename__ = 'login_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    ip_address = db.Column(db.String(64), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref=db.backref('login_logs', lazy='dynamic'))
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -19,6 +29,8 @@ class User(UserMixin, db.Model):
     
     is_active = db.Column(db.Boolean, default=True)
     is_verified = db.Column(db.Boolean, default=False)
+    is_banned = db.Column(db.Boolean, default=False)
+    session_token = db.Column(db.String(36), default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships

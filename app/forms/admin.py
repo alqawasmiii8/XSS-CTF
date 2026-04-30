@@ -10,6 +10,7 @@ class CategoryForm(FlaskForm):
 class ChallengeCreateForm(FlaskForm):
     title          = StringField('Title', validators=[DataRequired()])
     slug           = StringField('Slug', validators=[DataRequired()])
+    author         = StringField('Author', validators=[Optional()])
     category_id    = SelectField('Category', coerce=int, validators=[DataRequired()])
     difficulty     = SelectField('Difficulty', choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard'), ('Insane', 'Insane')])
     initial_points = IntegerField('Initial Points (max)', validators=[DataRequired()])
@@ -23,6 +24,7 @@ class ChallengeCreateForm(FlaskForm):
 class ChallengeEditForm(FlaskForm):
     title          = StringField('Title', validators=[DataRequired()])
     slug           = StringField('Slug', validators=[DataRequired()])
+    author         = StringField('Author', validators=[Optional()])
     category_id    = SelectField('Category', coerce=int, validators=[DataRequired()])
     difficulty     = SelectField('Difficulty', choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard'), ('Insane', 'Insane')])
     initial_points = IntegerField('Initial Points (max)', validators=[DataRequired()])
@@ -41,6 +43,8 @@ class EventSettingsForm(FlaskForm):
     challenges_maintenance = BooleanField('Challenges Under Maintenance')
     registration_maintenance = BooleanField('Registration Under Maintenance')
     flag_format = StringField('Global Flag Format (regex or template)')
+    anticheat_flag_spam_action = SelectField('Flag Spam Action', choices=[('ignore', 'Ignore (Rate Limit Only)'), ('notify', 'Notify Admin (Log)'), ('ban', 'Auto-Ban User')])
+    anticheat_flag_spam_threshold = IntegerField('Flag Spam Threshold (Failed Attempts)', default=50)
     submit = SubmitField('Update Settings')
 
 class TeamCreateAdminForm(FlaskForm):

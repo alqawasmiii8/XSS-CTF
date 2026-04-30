@@ -27,7 +27,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         {{ form.password.label(class="block text-sm font-mono font-bold text-cyber-primary") }}
-                        <a href="#" class="text-xs text-gray-500 hover:text-cyber-primary font-mono">Forgot password?</a>
+                        <a href="{{ url_for('auth.forgot_password') }}" class="text-xs text-gray-500 hover:text-cyber-primary font-mono">Forgot password?</a>
                     </div>
                     {{ form.password(class="w-full bg-cyber-darker border border-cyber-border rounded px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono", placeholder="••••••••") }}
                     {% for error in form.password.errors %}

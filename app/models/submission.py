@@ -46,3 +46,22 @@ class Solve(db.Model):
         db.UniqueConstraint('team_id', 'challenge_id', name='_team_challenge_solve_uc'),
         db.UniqueConstraint('user_id', 'challenge_id', name='_user_challenge_solve_uc'),
     )
+
+class ChallengeView(db.Model):
+    """
+    Records the first time a user opens a challenge page.
+    Used for impossible solve time detection.
+    """
+    __tablename__ = 'challenge_views'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.id'), nullable=False)
+    first_viewed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User')
+    challenge = db.relationship('Challenge')
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'challenge_id', name='_user_challenge_view_uc'),
+    )

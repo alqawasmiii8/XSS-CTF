@@ -32,6 +32,7 @@ def manage_challenges():
         chal = Challenge(
             title=form.title.data,
             slug=form.slug.data,
+            author=form.author.data or 'Unknown',
             category_id=form.category_id.data,
             difficulty=form.difficulty.data,
             initial_points=form.initial_points.data,
@@ -68,6 +69,7 @@ def edit_challenge(id):
     if form.validate_on_submit():
         chal.title = form.title.data
         chal.slug = form.slug.data
+        chal.author = form.author.data or 'Unknown'
         chal.category_id = form.category_id.data
         chal.difficulty = form.difficulty.data
         chal.initial_points = form.initial_points.data
@@ -172,6 +174,9 @@ def settings():
                 pass
         else:
             settings_obj.end_time = None
+            
+        settings_obj.anticheat_flag_spam_action = form.anticheat_flag_spam_action.data
+        settings_obj.anticheat_flag_spam_threshold = form.anticheat_flag_spam_threshold.data
         
         db.session.commit()
         flash('Settings updated globally.', 'success')
@@ -314,7 +319,78 @@ def edit_page(slug):
     if form.validate_on_submit():
         page.title = form.title.data
         page.content = form.content.data
-        db.session.commit()
-        flash(f"Page '{page.title}' updated successfully.", 'success')
         return redirect('/admin/pages')
     return render_template('admin/edit_page.html', form=form, page=page)
+
+@admin_bp.route('/anticheat')
+def anticheat():
+    from app.models.user import LoginLog, User
+    from app.models import Submission, ChallengeView, Solve
+    from app.models.challenge import Challenge
+    from sqlalchemy import func
+    
+    # 1. Multi-accounting detection: Group IPs used by multiple different user IDs
+    multi_account_ips = db.session.query(
+        LoginLog.ip_address,
+        func.count(func.distinct(LoginLog.user_id)).label('user_count')
+    ).group_by(LoginLog.ip_address).having(func.count(func.distinct(LoginLog.user_id)) > 1).all()
+    
+    suspicious_logins = []
+    for ip, count in multi_account_ips:
+        users = User.query.join(LoginLog).filter(LoginLog.ip_address == ip).distinct().all()
+        suspicious_logins.append({
+            'ip': ip,
+            'user_count': count,
+            'users': users
+        })
+
+    # 2. Brute force attempts: Find users with the most incorrect flag submissions
+    spam_submissions = db.session.query(
+        Submission.user_id,
+        func.count(Submission.id).label('wrong_count')
+    ).filter(Submission.is_correct == False).group_by(Submission.user_id).order_by(func.count(Submission.id).desc()).limit(20).all()
+    
+    spammers = []
+    for user_id, count in spam_submissions:
+        user = User.query.get(user_id)
+        if user:
+            spammers.append({'user': user, 'wrong_count': count})
+
+    # 3. Impossible solve time detection
+    # Thresholds in seconds per difficulty
+    THRESHOLDS = {'Easy': 20, 'Medium': 30, 'Hard': 60, 'Insane': 120}
+    
+    fast_solvers = []
+    solves = Solve.query.all()
+    for solve in solves:
+        view = ChallengeView.query.filter_by(user_id=solve.user_id, challenge_id=solve.challenge_id).first()
+        if view and solve.solved_at and view.first_viewed_at:
+            delta = (solve.solved_at - view.first_viewed_at).total_seconds()
+            difficulty = solve.challenge.difficulty
+            threshold = THRESHOLDS.get(difficulty, 30)
+            if delta < threshold:
+                fast_solvers.append({
+                    'user': solve.user,
+                    'challenge': solve.challenge,
+                    'seconds': round(delta, 1),
+                    'threshold': threshold,
+                })
+
+    return render_template('admin/anticheat.html', suspicious_logins=suspicious_logins, spammers=spammers, fast_solvers=fast_solvers)
+
+@admin_bp.route('/users/ban/<int:user_id>', methods=['POST'])
+def ban_user(user_id):
+    from app.models.user import User
+    user = User.query.get_or_404(user_id)
+    if user.is_admin():
+        flash('Cannot ban an admin user.', 'error')
+        return redirect('/admin/anticheat')
+        
+    user.is_banned = not user.is_banned
+    db.session.commit()
+    
+    status = 'banned' if user.is_banned else 'unbanned'
+    flash(f"User '{user.username}' has been {status}.", 'success')
+    
+    # Redirect back to the referrer or anticheat dashboard
+    return redirect(request.referrer or '/admin/anticheat')

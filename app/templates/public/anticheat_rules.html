@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Anticheat Rules{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-red-500 mb-4">🛡️ Fair Play & Anticheat Rules</h1>
+        <p class="text-gray-400">To maintain a competitive and fair environment, we have strict rules against cheating.</p>
+    </div>
+
+    <div class="space-y-6">
+        <!-- Rule 1 -->
+        <div class="bg-gray-800 p-6 rounded shadow border-l-4 border-red-500">
+            <h2 class="text-xl font-bold text-white mb-2">1. No Flag Sharing</h2>
+            <p class="text-gray-300">Sharing flags, solutions, or highly specific hints with other users or teams is strictly prohibited. Flags are uniquely generated or tracked; if someone else submits your flag, both accounts will be permanently banned.</p>
+        </div>
+
+        <!-- Rule 2 -->
+        <div class="bg-gray-800 p-6 rounded shadow border-l-4 border-yellow-500">
+            <h2 class="text-xl font-bold text-white mb-2">2. Multi-Accounting is Banned</h2>
+            <p class="text-gray-300">You are allowed only one active account per person. Creating "smurf" accounts, fake accounts to test payloads, or accounts to unlock hints without losing points on your main team is cheating. Our system monitors IP addresses and device fingerprints.</p>
+        </div>
+
+        <!-- Rule 3 -->
+        <div class="bg-gray-800 p-6 rounded shadow border-l-4 border-blue-500">
+            <h2 class="text-xl font-bold text-white mb-2">3. Brute-Forcing & Automated Scanners</h2>
+            <p class="text-gray-300">Do not use automated vulnerability scanners (like Nessus, Acunetix) or directory brute-forcers (DirBuster) unless a challenge explicitly permits it. Rate limits are in place, and aggressive automated traffic will result in an automatic IP ban.</p>
+        </div>
+
+        <!-- Rule 4 -->
+        <div class="bg-gray-800 p-6 rounded shadow border-l-4 border-purple-500">
+            <h2 class="text-xl font-bold text-white mb-2">4. Do Not Attack the Infrastructure</h2>
+            <p class="text-gray-300">Your targets are the challenges, not the CTF platform itself. Any attempt to exploit the scoreboard, database, or server infrastructure will lead to immediate disqualification and possible legal action.</p>
+        </div>
+    </div>
+
+    <div class="mt-10 p-6 bg-red-900 bg-opacity-30 border border-red-700 rounded text-center">
+        <h3 class="text-xl font-bold text-red-400 mb-2">Penalties for Cheating</h3>
+        <p class="text-gray-300 mb-4">Any violation of these rules will result in the immediate and unappealable removal of your team from the scoreboard and a permanent ban from future events.</p>
+        <p class="text-white font-mono bg-black inline-block px-4 py-2 rounded">Play fair. Hack hard.</p>
+    </div>
+</div>
+{% endblock %}

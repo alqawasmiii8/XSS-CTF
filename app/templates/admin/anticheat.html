@@ -1,0 +1,158 @@
+{% extends "admin/index.html" %}
+
+{% block title %}Anticheat Dashboard{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4">
+    <h2 class="text-2xl font-bold mb-2">🛡️ Anticheat Dashboard</h2>
+    <p class="text-gray-400">Monitor suspicious activities, multi-accounting, and brute-force attempts.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Multi-Accounting -->
+    <div class="bg-gray-800 rounded shadow">
+        <div class="px-4 py-3 border-b border-gray-700">
+            <h3 class="text-lg font-semibold text-red-400">🚨 Possible Multi-Accounting</h3>
+            <p class="text-sm text-gray-400">IPs used by multiple accounts.</p>
+        </div>
+        <div class="p-4 overflow-x-auto">
+            {% if suspicious_logins %}
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                        <th class="pb-2">IP Address</th>
+                        <th class="pb-2">Accounts (#)</th>
+                        <th class="pb-2">Users</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for item in suspicious_logins %}
+                    <tr class="border-b border-gray-700 last:border-0">
+                        <td class="py-3 font-mono text-xs text-yellow-300">{{ item.ip }}</td>
+                        <td class="py-3">{{ item.user_count }}</td>
+                        <td class="py-3">
+                            <div class="flex flex-wrap gap-1 items-center">
+                                {% for u in item.users %}
+                                <div class="flex items-center gap-1 bg-gray-700 px-2 py-1 rounded text-xs">
+                                    <span class="{% if u.is_banned %}line-through text-gray-500{% endif %}">{{ u.username }}</span>
+                                    <form action="/admin/users/ban/{{ u.id }}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Are you sure you want to toggle ban status for {{ u.username }}?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="text-red-400 hover:text-red-300 ml-1" title="Ban/Unban">
+                                            {% if u.is_banned %}Unban{% else %}Ban{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-6 text-gray-500">
+                <p>No suspicious IP sharing detected.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Flag Spammers -->
+    <div class="bg-gray-800 rounded shadow">
+        <div class="px-4 py-3 border-b border-gray-700">
+            <h3 class="text-lg font-semibold text-orange-400">💥 Top Incorrect Submissions</h3>
+            <p class="text-sm text-gray-400">Users with the most failed flag attempts (Brute-force suspects).</p>
+        </div>
+        <div class="p-4 overflow-x-auto">
+            {% if spammers %}
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                        <th class="pb-2">User</th>
+                        <th class="pb-2">Team</th>
+                        <th class="pb-2">Failed Attempts</th>
+                        <th class="pb-2 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for spammer in spammers %}
+                    <tr class="border-b border-gray-700 last:border-0">
+                        <td class="py-3 font-semibold {% if spammer.user.is_banned %}line-through text-gray-500{% endif %}">{{ spammer.user.username }}</td>
+                        <td class="py-3">{{ spammer.user.team.name if spammer.user.team else 'Solo' }}</td>
+                        <td class="py-3 text-red-400 font-bold">{{ spammer.wrong_count }}</td>
+                        <td class="py-3 text-right">
+                            <form action="/admin/users/ban/{{ spammer.user.id }}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Are you sure you want to toggle ban status for {{ spammer.user.username }}?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="px-2 py-1 bg-red-900/50 text-red-400 hover:bg-red-900 border border-red-700 rounded text-xs font-mono transition-colors">
+                                    {% if spammer.user.is_banned %}Unban{% else %}Ban{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-6 text-gray-500">
+                <p>No incorrect submissions found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Impossible Solve Times -->
+<div class="mt-6 bg-gray-800 rounded shadow">
+    <div class="px-4 py-3 border-b border-gray-700">
+        <h3 class="text-lg font-semibold text-purple-400">⚡ Impossible Solve Times</h3>
+        <p class="text-sm text-gray-400">Users who solved a challenge suspiciously fast after first opening it.</p>
+    </div>
+    <div class="p-4 overflow-x-auto">
+        {% if fast_solvers %}
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-gray-400 border-b border-gray-700">
+                    <th class="pb-2">User</th>
+                    <th class="pb-2">Challenge</th>
+                    <th class="pb-2">Difficulty</th>
+                    <th class="pb-2">Solved In</th>
+                    <th class="pb-2">Threshold</th>
+                    <th class="pb-2 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm">
+                {% for fs in fast_solvers %}
+                <tr class="border-b border-gray-700 last:border-0">
+                    <td class="py-3 font-semibold {% if fs.user.is_banned %}line-through text-gray-500{% endif %}">{{ fs.user.username }}</td>
+                    <td class="py-3 font-mono text-xs text-cyan-300">{{ fs.challenge.title }}</td>
+                    <td class="py-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-bold
+                            {% if fs.challenge.difficulty == 'Easy' %}bg-green-900/50 text-green-400
+                            {% elif fs.challenge.difficulty == 'Medium' %}bg-yellow-900/50 text-yellow-400
+                            {% elif fs.challenge.difficulty == 'Hard' %}bg-orange-900/50 text-orange-400
+                            {% else %}bg-red-900/50 text-red-400{% endif %}">
+                            {{ fs.challenge.difficulty }}
+                        </span>
+                    </td>
+                    <td class="py-3 text-purple-400 font-bold">{{ fs.seconds }}s</td>
+                    <td class="py-3 text-gray-500">&lt; {{ fs.threshold }}s</td>
+                    <td class="py-3 text-right">
+                        <form action="/admin/users/ban/{{ fs.user.id }}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Toggle ban status for {{ fs.user.username }}?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="px-2 py-1 bg-red-900/50 text-red-400 hover:bg-red-900 border border-red-700 rounded text-xs font-mono transition-colors">
+                                {% if fs.user.is_banned %}Unban{% else %}Ban{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-6 text-gray-500">
+            <p>No suspicious solve times detected.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

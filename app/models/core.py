@@ -38,6 +38,10 @@ class EventSettings(db.Model):
     challenges_maintenance = db.Column(db.Boolean, default=False)
     registration_maintenance = db.Column(db.Boolean, default=False)
     flag_format = db.Column(db.String(100), default='XSS{.*}')
+    
+    # Anticheat Settings
+    anticheat_flag_spam_action = db.Column(db.String(20), default='notify') # 'ignore', 'notify', 'ban'
+    anticheat_flag_spam_threshold = db.Column(db.Integer, default=50)
 
 class AdminLog(db.Model):
     __tablename__ = 'admin_logs'

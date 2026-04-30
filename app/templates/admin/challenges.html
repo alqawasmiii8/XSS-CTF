@@ -12,6 +12,7 @@
                 <tr>
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Title</th>
+                    <th class="px-4 py-3">Author</th>
                     <th class="px-4 py-3">Category</th>
                     <th class="px-4 py-3">Live Pts</th>
                     <th class="px-4 py-3">Initial / Min</th>
@@ -25,6 +26,7 @@
                 <tr class="border-b border-cyber-border/50 hover:bg-cyber-darker/50 text-gray-300">
                     <td class="px-4 py-3">{{ chal.id }}</td>
                     <td class="px-4 py-3 font-bold text-white">{{ chal.title }}</td>
+                    <td class="px-4 py-3 text-cyan-400 text-xs">{{ chal.author or '—' }}</td>
                     <td class="px-4 py-3">{{ chal.category.name if chal.category else 'Misc' }}</td>
                     <td class="px-4 py-3 text-cyber-primary font-bold">{{ chal.points }}</td>
                     <td class="px-4 py-3 text-gray-500 text-xs">{{ chal.initial_points }} → {{ chal.minimum_points }}</td>
@@ -75,6 +77,10 @@
                 <div>
                     {{ form.slug.label(class="block text-xs font-mono text-gray-400 mb-1") }}
                     {{ form.slug(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="e.g. web-inspector") }}
+                </div>
+                <div>
+                    {{ form.author.label(class="block text-xs font-mono text-gray-400 mb-1") }}
+                    {{ form.author(class="w-full bg-cyber-darker border border-cyber-border rounded px-3 py-2 text-white outline-none focus:border-cyber-primary font-mono text-sm", placeholder="e.g. 0xOmar") }}
                 </div>
                 <div>
                     {{ form.category_id.label(class="block text-xs font-mono text-gray-400 mb-1") }}

@@ -93,6 +93,14 @@ def profile_edit():
     from app.forms.user import ProfileEditForm
     form = ProfileEditForm(obj=current_user)
     if form.validate_on_submit():
+        # Check if email is being changed and is unique
+        if form.email.data != current_user.email:
+            existing_user = User.query.filter_by(email=form.email.data).first()
+            if existing_user:
+                flash('Email is already in use by another account.', 'error')
+                return render_template('public/profile_edit.html', form=form)
+            current_user.email = form.email.data
+            
         current_user.bio = form.bio.data
         current_user.avatar = form.avatar.data
         current_user.country = form.country.data
@@ -112,4 +120,8 @@ def user_profile(user_id):
     total_points = sum(s.points_awarded for s in solves)
     
     return render_template('public/user_profile.html', user=user, solves=solves, total_points=total_points)
+
+@public_bp.route('/anticheat')
+def anticheat_rules():
+    return render_template('public/anticheat_rules.html')
 

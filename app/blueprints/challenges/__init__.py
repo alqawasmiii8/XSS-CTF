@@ -2,8 +2,8 @@ import os
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, flash, request, current_app
 from flask_login import login_required, current_user
-from app.extensions import db
-from app.models import Challenge, Category, Submission, Solve, EventSettings, Hint, HintUnlock
+from app.extensions import db, limiter
+from app.models import Challenge, Category, Submission, Solve, EventSettings, Hint, HintUnlock, ChallengeView
 from app.forms.challenge import FlagSubmissionForm
 
 challenges_bp = Blueprint('challenges', __name__, url_prefix='/challenges')
@@ -36,6 +36,7 @@ def index():
 
 @challenges_bp.route('/<int:challenge_id>', methods=['GET', 'POST'])
 @login_required
+@limiter.limit("20 per minute")
 def view(challenge_id):
     challenge = Challenge.query.filter_by(id=challenge_id, is_visible=True).first_or_404()
     form = FlagSubmissionForm()
@@ -44,6 +45,13 @@ def view(challenge_id):
     settings = EventSettings.query.first()
     if settings and not settings.is_live:
         flash('Competition is currently paused or not started.', 'warning')
+
+    # Track first view time for impossible-solve detection
+    existing_view = ChallengeView.query.filter_by(user_id=current_user.id, challenge_id=challenge.id).first()
+    if not existing_view:
+        view_log = ChallengeView(user_id=current_user.id, challenge_id=challenge.id)
+        db.session.add(view_log)
+        db.session.commit()
         
     if form.validate_on_submit() and settings and settings.is_live:
         # Check team requirement

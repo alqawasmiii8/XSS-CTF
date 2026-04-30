@@ -23,6 +23,15 @@
                     {% endfor %}
                 </div>
 
+                <!-- Email -->
+                <div>
+                    {{ form.email.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2 uppercase tracking-widest") }}
+                    {{ form.email(class="w-full bg-cyber-darker border border-cyber-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyber-primary focus:ring-1 focus:ring-cyber-primary font-mono transition-all", placeholder="user@domain.com") }}
+                    {% for error in form.email.errors %}
+                        <p class="text-cyber-secondary text-xs mt-1 font-mono">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
                 <!-- Avatar URL -->
                 <div>
                     {{ form.avatar.label(class="block text-sm font-mono font-bold text-cyber-primary mb-2 uppercase tracking-widest") }}
