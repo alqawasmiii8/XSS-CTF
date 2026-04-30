@@ -5,6 +5,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: flask db upgrade && gunicorn wsgi:app --bind 0.0.0.0:$PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.2
       - key: FLASK_ENV
         value: production
       - key: DATABASE_URL
